@@ -1,4 +1,4 @@
-#+SARIT’s eXist-db webapp
+#+TITLE: SARIT’s eXist-db web application
 
 This repository collects the various modules needed to run
 http://sarit.indology.info.
@@ -9,8 +9,8 @@ guide should make it as painless as currently possible.[fn:1]
 You can get all the necessary components like this:
 
 #+BEGIN_SRC sh
-git clone --recursive https://github.com/sarit/sarit-exist-webapp.git
-cd ./sarit-exist-webapp/
+git clone --recursive https://github.com/sarit/sarit-existdb.git
+cd ./sarit-existdb/
 wget http://sanskritlibrary.org/software/transcodeFile.zip
 #+END_SRC
 
@@ -28,19 +28,16 @@ wget http://sanskritlibrary.org/software/transcodeFile.zip
 6) https://github.com/sarit/sarit-pm: the user interface of the webapp
 
 
-* To install
 
-** TODO Simple: docker
+* Manual installation (for testing new features)
 
-** Manually (for testing new features)
-
-*** System-wide requirements
+** System-wide requirements
 
 #+BEGIN_SRC sh
 sudo aptitude install openjdk-8-jdk maven nodejs npm
 #+END_SRC
 
-*** eXist-db
+** eXist-db
 
 #+BEGIN_SRC sh :results raw output
 cd ./exist/
@@ -48,7 +45,7 @@ JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh clean
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh
 #+END_SRC
 
-**** Test startup 
+*** Test startup 
 
 #+BEGIN_SRC sh
 cd ./exist/
@@ -56,13 +53,13 @@ JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/startup.sh
 #+END_SRC
 
 
-**** Install dependencies from dashboard, http://127.0.0.1:8080/exist/apps/dashboard/index.html
+*** Install dependencies from dashboard, http://127.0.0.1:8080/exist/apps/dashboard/index.html
 
 1) tei-publisher-lib: http://gitlab.exist-db.org/tei-publisher/tei-publisher-lib
 
 
 
-*** lucene-transcoding-analyzer and sarit-transliteration-exist-module
+** lucene-transcoding-analyzer and sarit-transliteration-exist-module
 
 #+BEGIN_SRC sh
   cd ./lucene-transcoding-analyzer/
@@ -81,7 +78,7 @@ The last step should produce a file called something like
 this via the dashboard,
 http://127.0.0.1:8080/exist/apps/dashboard/index.html.
 
-*** sarit-data
+** sarit-data
 
 #+BEGIN_SRC sh
 cd ./sarit-data/
@@ -96,7 +93,7 @@ You might also want to update the data collection, by visiting:
 http://127.0.0.1:8080/exist/apps/sarit-data/index.html.
 
 
-*** sarit-pm
+** sarit-pm
 
 (Note for Debian users: using npm requires node-legacy package, ~sudo
 aptitude install nodejs-legacy~.)
@@ -122,7 +119,7 @@ Now, check if it worked:
 
 
 #+BEGIN_SRC bash
-  git clone --shallow-submodules --depth 1 --recursive https://github.com/sarit/sarit-exist-webapp.git
+  git clone --shallow-submodules --depth 1 --recursive https://github.com/sarit/sarit-existdb.git
   cd ./sarit-exist-webapp/exist/
   JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh
   cd ../sarit-transliteration-exist-module/
@@ -143,6 +140,11 @@ Now, check if it worked:
 #+END_SRC
 
 
+
+
+* Automatic installation
+
+- To be done when manual works well.
 
 * Footnotes
 
