@@ -72,7 +72,7 @@ JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/startup.sh
   cd ./lucene-transcoding-analyzer/
   mvn clean install -DskipTests
   cd ../sarit-transliteration-exist-module/
-  mvn clean package
+  mvn package
 #+END_SRC
 
 The last step should produce a file called something like
@@ -121,28 +121,31 @@ Now, check if it worked:
 ** With ~autodeploy/~
 
 
-#+BEGIN_SRC sh
-git clone --depth 1 --recursive https://github.com/sarit/exist
-cd exist
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh
-cd ../sarit-transliteration-exist-module/
-mvn clean package 
-cp ./target/sarit-transliteration-exist-module-0.0.8.xar ../exist/autodeploy/sarit-transliteration-exist-module-0.0.8.xar
-cd ../sarit-data/
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
-cp ./build/sarit-data-0.1.xar ../exist/autodeploy/ZZZ01__sarit-data-0.1.xar
-cd ../sarit-pm/
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
-cp ./build/sarit-pm-0.2.xar ../exist/autodeploy/ZZZ99__sarit-pm-0.2.xar
-cd ../exist/autodeploy/
-wget http://demo.exist-db.org/exist/apps/public-repo/public/tei-publisher-lib-2.0.3.xar
-wget http://exist-db.org/exist/apps/public-repo/public/expath-pdf-exist-lib-0.0.4.xar
+#+BEGIN_SRC bash
+  git clone --shallow-submodules --depth 1 --recursive https://github.com/sarit/sarit-exist-webapp.git
+  cd ./sarit-exist-webapp/exist/
+  JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh
+  cd ../sarit-transliteration-exist-module/
+  mvn package
+  cp ./target/sarit-transliteration-exist-module-0.0.8.xar ../exist/autodeploy/
+  cd ../sarit-data/
+  JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
+  cp ./build/sarit-data-0.1.xar ../exist/autodeploy/sarit-data-0.1.xar
+  cd ../sarit-pm/
+  JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
+  cp ./build/sarit-pm-0.2.xar ../exist/autodeploy/sarit-pm-0.2.xar
+  cd ../exist/autodeploy/
+  wget http://demo.exist-db.org/exist/apps/public-repo/public/tei-publisher-lib-2.0.3.xar \\
+  http://exist-db.org/exist/apps/public-repo/public/expath-pdf-exist-lib-0.0.4.xar \\
+  http://demo.exist-db.org/exist/apps/public-repo/public/tei-pm-1.1.2.xar
+  cd ../
+  JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/startup.sh
 #+END_SRC
 
 
 
 * Footnotes
 
-[fn:1] This is written with a typical Debian system in mind, and thus
+[fn:1] This is written with a typical Debian system in mind, and
 should work also for Ubuntu and similar.
 
