@@ -62,7 +62,6 @@ JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/startup.sh
 ** lucene-transcoding-analyzer and sarit-transliteration-exist-module
 
 #+BEGIN_SRC sh
-  cd ./lucene-transcoding-analyzer/
   [ ! -f transcodeFile.zip ] && wget http://sanskritlibrary.org/software/transcodeFile.zip
   unzip transcodeFile.zip
   mvn install:install-file -Dfile=./TranscodeFile/dist/lib/SanskritLibrary.jar -DgroupId=org.sanskritlibrary -DartifactId=sl -Dversion=0.1 -Dpackaging=jar
