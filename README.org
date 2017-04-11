@@ -1,0 +1,148 @@
+#+SARIT’s eXist-db webapp
+
+This repository collects the various modules needed to run
+http://sarit.indology.info.
+
+It is not yet possible to do a completely automated install, but this
+guide should make it as painless as currently possible.[fn:1]
+
+You can get all the necessary components like this:
+
+#+BEGIN_SRC sh
+git clone --recursive https://github.com/sarit/sarit-exist-webapp.git
+cd ./sarit-exist-webapp/
+wget http://sanskritlibrary.org/software/transcodeFile.zip
+#+END_SRC
+
+
+1) https://github.com/sarit/exist: eXist-db with a patch to enable
+   case-sensitive searching
+2) https://github.com/sarit/lucene-transcoding-analyzer: a Java
+   library to deal with SLP1 encoding.
+   1) Depends on http://sanskritlibrary.org/software/transcodeFile.zip
+3) https://github.com/sarit/sarit-transliteration-exist-module: an
+   eXist-db module that uses the lucene-transcoding-analyzer
+4) http://gitlab.exist-db.org/tei-publisher/tei-publisher-lib.git: TEI
+   Publisher library, for formatting and display
+5) https://github.com/sarit/sarit-data: the data for the webapp
+6) https://github.com/sarit/sarit-pm: the user interface of the webapp
+
+
+* To install
+
+** TODO Simple: docker
+
+** Manually (for testing new features)
+
+*** System-wide requirements
+
+#+BEGIN_SRC sh
+sudo aptitude install openjdk-8-jdk maven nodejs npm
+#+END_SRC
+
+*** eXist-db
+
+#+BEGIN_SRC sh :results raw output
+cd ./exist/
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh clean
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh
+#+END_SRC
+
+**** Test startup 
+
+#+BEGIN_SRC sh
+cd ./exist/
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/startup.sh
+#+END_SRC
+
+
+**** Install dependencies from dashboard, http://127.0.0.1:8080/exist/apps/dashboard/index.html
+
+1) tei-publisher-lib: http://gitlab.exist-db.org/tei-publisher/tei-publisher-lib
+
+
+
+*** lucene-transcoding-analyzer and sarit-transliteration-exist-module
+
+#+BEGIN_SRC sh
+  cd ./lucene-transcoding-analyzer/
+  [ ! -f transcodeFile.zip ] && wget http://sanskritlibrary.org/software/transcodeFile.zip
+  unzip transcodeFile.zip
+  mvn install:install-file -Dfile=./TranscodeFile/dist/lib/SanskritLibrary.jar -DgroupId=org.sanskritlibrary -DartifactId=sl -Dversion=0.1 -Dpackaging=jar
+  cd ./lucene-transcoding-analyzer/
+  mvn clean install -DskipTests
+  cd ../sarit-transliteration-exist-module/
+  mvn clean package
+#+END_SRC
+
+The last step should produce a file called something like
+~sarit-transliteration-exist-module-0.0.8.xar~ in
+~./sarit-transliteration-exist-module/targets/~.  You have to install
+this via the dashboard,
+http://127.0.0.1:8080/exist/apps/dashboard/index.html.
+
+*** sarit-data
+
+#+BEGIN_SRC sh
+cd ./sarit-data/
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
+#+END_SRC
+
+This should give you something like
+~./sarit-data/build/sarit-data-0.1.xar~, which you should install via
+the dashboard, http://127.0.0.1:8080/exist/apps/dashboard/index.html.
+
+You might also want to update the data collection, by visiting:
+http://127.0.0.1:8080/exist/apps/sarit-data/index.html.
+
+
+*** sarit-pm
+
+(Note for Debian users: using npm requires node-legacy package, ~sudo
+aptitude install nodejs-legacy~.)
+
+#+BEGIN_SRC sh
+cd ./sarit-pm/
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
+#+END_SRC
+
+This should give you something like
+~./sarit-pm/build/sarit-pm-0.2.xar~, which you should also install via
+the dashboard, http://127.0.0.1:8080/exist/apps/dashboard/index.html.
+
+
+Now, check if it worked: 
+
+- http://127.0.0.1:8080/exist/apps/sarit-pm/works/
+- or http://127.0.0.1:8080/exist/apps/sarit-pm/works/search.html?query=*lak%E1%B9%A3a%E1%B9%87*+AND+*pratyak%E1%B9%A3*&field=text&tei-target=tei-text&work-authors=all
+
+
+
+** With ~autodeploy/~
+
+
+#+BEGIN_SRC sh
+git clone --depth 1 --recursive https://github.com/sarit/exist
+cd exist
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh
+cd ../sarit-transliteration-exist-module/
+mvn clean package 
+cp ./target/sarit-transliteration-exist-module-0.0.8.xar ../exist/autodeploy/sarit-transliteration-exist-module-0.0.8.xar
+cd ../sarit-data/
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
+cp ./build/sarit-data-0.1.xar ../exist/autodeploy/ZZZ01__sarit-data-0.1.xar
+cd ../sarit-pm/
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
+cp ./build/sarit-pm-0.2.xar ../exist/autodeploy/ZZZ99__sarit-pm-0.2.xar
+cd ../exist/autodeploy/
+wget http://demo.exist-db.org/exist/apps/public-repo/public/tei-publisher-lib-2.0.3.xar
+wget http://exist-db.org/exist/apps/public-repo/public/expath-pdf-exist-lib-0.0.4.xar
+#+END_SRC
+
+
+
+* Footnotes
+
+[fn:1] This is written with a typical Debian system in mind, and thus
+should work also for Ubuntu and similar.
+
