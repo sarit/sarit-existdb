@@ -119,10 +119,19 @@ Now, check if it worked:
 
 #+BEGIN_SRC bash
   git clone --shallow-submodules --depth 1 --recursive https://github.com/sarit/sarit-existdb.git
-  cd ./sarit-exist-webapp/exist/
+  cd ./sarit-existdb/
+  [ ! -f transcodeFile.zip ] && wget http://sanskritlibrary.org/software/transcodeFile.zip
+  unzip transcodeFile.zip
+  mvn install:install-file -Dfile=./TranscodeFile/dist/lib/SanskritLibrary.jar -DgroupId=org.sanskritlibrary -DartifactId=sl -Dversion=0.1 -Dpackaging=jar
+  cd ./lucene-transcoding-analyzer/
+  mvn clean install -DskipTests
+  cd ../exist/
   JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh
   cd ../sarit-transliteration-exist-module/
-  mvn package
+  ## next step dangerous? deleted content of sarit-data, sarit-pm, and
+  ## sarit-transliteration-exist-module, had to git --reset hard in
+  ## these directories
+  # mvn package
   cp ./target/sarit-transliteration-exist-module-0.0.8.xar ../exist/autodeploy/
   cd ../sarit-data/
   JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
@@ -131,13 +140,16 @@ Now, check if it worked:
   JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
   cp ./build/sarit-pm-0.2.xar ../exist/autodeploy/sarit-pm-0.2.xar
   cd ../exist/autodeploy/
-  wget http://demo.exist-db.org/exist/apps/public-repo/public/tei-publisher-lib-2.0.3.xar \\
-  http://exist-db.org/exist/apps/public-repo/public/expath-pdf-exist-lib-0.0.4.xar \\
-  http://demo.exist-db.org/exist/apps/public-repo/public/tei-pm-1.1.2.xar
+  wget http://demo.exist-db.org/exist/apps/public-repo/public/tei-publisher-lib-2.0.3.xar \
+       http://exist-db.org/exist/apps/public-repo/public/expath-pdf-exist-lib-0.0.4.xar \
+       http://demo.exist-db.org/exist/apps/public-repo/public/tei-pm-1.1.2.xar
   cd ../
+  # start exist to install autodeploy ... takes long!
   JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/startup.sh
 #+END_SRC
 
+You can check logs for the autodeployment in
+~./exist/webapp/WEB-INF/logs/expath-repo.log~.
 
 
 
