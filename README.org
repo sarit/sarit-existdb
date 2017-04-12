@@ -118,7 +118,7 @@ Now, check if it worked:
 
 
 #+BEGIN_SRC bash
-  git clone --shallow-submodules --depth 1 --recursive https://github.com/sarit/sarit-existdb.git
+  git clone --recursive --shallow-submodules --depth 1 https://github.com/sarit/sarit-existdb.git
   cd ./sarit-existdb/
   [ ! -f transcodeFile.zip ] && wget http://sanskritlibrary.org/software/transcodeFile.zip
   unzip transcodeFile.zip
@@ -128,10 +128,7 @@ Now, check if it worked:
   cd ../exist/
   JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh
   cd ../sarit-transliteration-exist-module/
-  ## next step dangerous? deleted content of sarit-data, sarit-pm, and
-  ## sarit-transliteration-exist-module, had to git --reset hard in
-  ## these directories
-  # mvn package
+  mvn package
   cp ./target/sarit-transliteration-exist-module-0.0.8.xar ../exist/autodeploy/
   cd ../sarit-data/
   JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
