@@ -1,6 +1,8 @@
 #+TITLE: Docker image for SARIT’s web application
 
-Run ~docker build .~.
+From this directory, run ~docker build -t sarit/webapp:0.1 . > /tmp/docker-build.log 2>&1~.
+
+In case of success, run ~docker run sarit/webapp:0.1~.
 
 * Cheatsheet
 
