@@ -5,10 +5,15 @@ STARTDIR=$(pwd)
 
 echo "Installing to $ROOTDIR ..."
 
-cd "$ROOTDIR"
+if [ -d .git ] && git remote -v | grep -q -i "sarit-existdb.git"
+then
+    GITREMOTE="file://$(git rev-parse --show-toplevel)"
+else
+    GITREMOTE="https://github.com/sarit/sarit-existdb.git"
+fi
 
-echo "Cloning sarit webapp ..."
-git clone --recursive --shallow-submodules --depth 1 https://github.com/sarit/sarit-existdb.git "$ROOTDIR"
+echo "Cloning sarit webapp from $GITREMOTE to $ROOTDIR ..."
+git clone --recursive --shallow-submodules --depth 1 "$GITREMOTE" "$ROOTDIR"
 cd "$ROOTDIR"
 
 echo "Getting and installing transcode library from sanskritlibrary.org ..."
@@ -34,10 +39,20 @@ mvn clean package
 cp ./target/sarit-transliteration-exist-module-0.0.8.xar ../exist/autodeploy/
 cd "$ROOTDIR"
 
+echo "Updating sarit-data collection  ..."
+cd ./sarit-data/data/
+for xml in $(xmlstarlet sel -N xi='http://www.w3.org/2001/XInclude' -T -t -m "//xi:include[@href]" -v "concat(\"$ROOTDIR/SARIT-corpus/\", ./@href)" -n   "$ROOTDIR"/SARIT-corpus/saritcorpus.xml)
+do
+    echo "Updating $xml ..."
+    cp "$xml" ./
+done
+cd "$ROOTDIR"
+
 echo "Building sarit-data ..."
 cd ./sarit-data/
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
-cp ./build/sarit-data-0.1.xar ../exist/autodeploy/sarit-data-0.1.xar
+## don’t autodeploy yet --> depends on sarit-pm having been installed for index ?
+# cp ./build/sarit-data-0.1.xar ../exist/autodeploy/sarit-data-0.1.xar
 cd "$ROOTDIR"
 
 echo "Building sarit-pm ..."
@@ -53,9 +68,27 @@ wget http://demo.exist-db.org/exist/apps/public-repo/public/tei-publisher-lib-2.
      http://demo.exist-db.org/exist/apps/public-repo/public/tei-pm-1.1.2.xar
 cd "$ROOTDIR"
 
-echo "Starting existdb to trigger autodeploy (takes a while) ..."
+echo "Starting existdb to trigger autodeploy (#1) ..."
 cd ./exist/
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/startup.sh
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre java -jar start.jar jetty &
+EXPROC=$!
+echo "Wait for existdb ..."
+sleep 30
+echo "Shut down existdb ($EXPROC) ..."
+kill -SIGTERM $EXPROC
+sleep 30
+cd "$ROOTDIR"
+
+echo "Deploying sarit-data ..."
+cd ./sarit-data/
+# autodeploy
+cp ./build/sarit-data-0.1.xar ../exist/autodeploy/sarit-data-0.1.xar
+cd "$ROOTDIR"
+
+echo "Starting existdb to trigger autodeploy of sarit-data, be patient #2 ..."
+cd ./exist/
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre java -jar start.jar jetty
+
 
 cd "$STARTDIR"
 

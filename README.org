@@ -24,8 +24,11 @@ wget http://sanskritlibrary.org/software/transcodeFile.zip
    eXist-db module that uses the lucene-transcoding-analyzer
 4) http://gitlab.exist-db.org/tei-publisher/tei-publisher-lib.git: TEI
    Publisher library, for formatting and display
-5) https://github.com/sarit/sarit-data: the data for the webapp
-6) https://github.com/sarit/sarit-pm: the user interface of the webapp
+5) A module for PDF functionality:
+   http://exist-db.org/exist/apps/public-repo/public/expath-pdf-exist-lib-0.0.4.xar
+6) http://demo.exist-db.org/exist/apps/public-repo/public/tei-pm-1.1.2.xar
+7) https://github.com/sarit/sarit-data: the data for the webapp
+8) https://github.com/sarit/sarit-pm: the user interface of the webapp
 
 
 
