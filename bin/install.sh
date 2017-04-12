@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-ROOTDIR=$(mktemp -d -t sarit-existdb-XXXX)
+if [ -z "$1" ]
+then
+    ROOTDIR=$(mktemp -d -t sarit-existdb-XXXX)
+else
+    ROOTDIR="$1"
+fi
 STARTDIR=$(pwd)
 
 echo "Installing to $ROOTDIR ..."
@@ -13,13 +18,15 @@ else
 fi
 
 echo "Cloning sarit webapp from $GITREMOTE to $ROOTDIR ..."
-git clone --recursive --shallow-submodules --depth 1 "$GITREMOTE" "$ROOTDIR"
+git clone --recursive "$GITREMOTE" "$ROOTDIR"
 cd "$ROOTDIR"
+git submodule init
+git submodule update --depth 1
 
 echo "Getting and installing transcode library from sanskritlibrary.org ..."
 [ ! -f transcodeFile.zip ] && wget http://sanskritlibrary.org/software/transcodeFile.zip
 unzip transcodeFile.zip
-mvn install:install-file -Dfile=./TranscodeFile/dist/lib/SanskritLibrary.jar -DgroupId=org.sanskritlibrary -DartifactId=sl -Dversion=0.1 -Dpackaging=jarn
+mvn install:install-file -Dfile=./TranscodeFile/dist/lib/SanskritLibrary.jar -DgroupId=org.sanskritlibrary -DartifactId=sl -Dversion=0.1 -Dpackaging=jar
 cd "$ROOTDIR"
 
 echo "Installing lucene-transcoding-analyzer ..."

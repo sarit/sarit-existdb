@@ -1,0 +1,47 @@
+#+TITLE: Docker image for SARIT’s web application
+
+Run ~docker build .~.
+
+* Cheatsheet
+
+** Find containers
+
+#+BEGIN_SRC sh
+docker ps
+docker ps -a
+docker container
+docker container ls -a
+#+END_SRC
+
+** ‘Log in’ to the container
+
+#+BEGIN_SRC sh
+docker exec -i -t <CONTAINER-ID> /bin/bash
+#+END_SRC
+
+** Logs
+
+Get the logs from inside the container:
+
+#+BEGIN_SRC sh
+docker ps
+docker cp <CONTAINER-ID>:/opt/lib/sarit-existdb/exist/webapp/WEB-INF/logs/ /tmp/docker-exist-logs/
+#+END_SRC
+
+
+** Cleaninug up
+
+ #+BEGIN_SRC sh
+ docker container ls
+ docker images
+ docker ps -a
+
+ docker container rm CONTAINER
+ docker rmi IMAGE # to remove an image
+ #+END_SRC
+
+* Resources
+
+1) Official documentation for using file:Dockerfile: https://docs.docker.com/engine/reference/builder/
+2) Tips: https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/
+3) Example of a Debian-based eXistdb docker: https://github.com/davidgaya/docker-eXistDB/
