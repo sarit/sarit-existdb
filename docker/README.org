@@ -1,6 +1,13 @@
 #+TITLE: Docker image for SARIT’s web application
 
-From this directory, run ~docker build -t sarit/webapp:0.1 . > /tmp/docker-build.log 2>&1~.
+
+To build a local docker image, run
+
+#+BEGIN_SRC sh
+docker build -f docker/Dockerfile -t sarit/webapp:0.1 . > /tmp/docker-build.log 2>&1
+#+END_SRC
+
+from this repository’s root directory (file:../).
 
 In case of success, run ~docker run sarit/webapp:0.1~.
 

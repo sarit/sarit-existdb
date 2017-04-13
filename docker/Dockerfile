@@ -11,6 +11,7 @@ RUN apt-get update && \
 # RUN curl -o- https://raw.githubusercontent.com/sarit/sarit-existdb/master/bin/install.sh | bash
 # RUN curl -o- http://localhost:9876/install.sh | bash
 
+# install the transcoder
 ADD http://sanskritlibrary.org/software/transcodeFile.zip /tmp/slp/
 WORKDIR /tmp/slp/
 RUN unzip transcodeFile.zip && \
@@ -22,23 +23,45 @@ RUN unzip transcodeFile.zip && \
 	-Dpackaging=jar && \	
     cd ../ && rm -rf ./slp/
 
-
+# install the lucene module
 ADD ./lucene-transcoding-analyzer/ ./lucene-transcoding-analyzer/
 WORKDIR ./lucene-transcoding-analyzer/
 RUN mvn clean install -DskipTests && \
     rm -rf ./lucene-transcoding-analyzer/
 
+# set up existdb
+## add necessary modules
+ADD ./docker/start-and-kill-exist.sh /opt/lib/sarit-existdb/
 ADD ./exist/ /opt/lib/sarit-existdb/
+ADD ./sarit-pm/build/sarit-pm-0.2.xar \
+      /opt/lib/sarit-existdb/autodeploy/
+ADD ./sarit-transliteration-exist-module/target/sarit-transliteration-exist-module-0.0.8.xar \
+     /opt/lib/sarit-existdb/autodeploy/
 ADD http://demo.exist-db.org/exist/apps/public-repo/public/tei-publisher-lib-2.0.3.xar \
     /opt/lib/sarit-existdb/autodeploy/
 ADD http://dome.exist-db.org/exist/apps/public-repo/public/expath-pdf-exist-lib-0.0.4.xar \
     /opt/lib/sarit-existdb/autodeploy/
 ADD http://demo.exist-db.org/exist/apps/public-repo/public/tei-pm-1.1.2.xar \
     /opt/lib/sarit-existdb/autodeploy/
+# and compile
 WORKDIR /opt/lib/sarit-existdb/
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
-RUN ["/opt/lib/sarit-existdb/build.sh"]
+RUN /opt/lib/sarit-existdb/build.sh
 
+# start up once to load everything from autodeploy
+WORKDIR /opt/lib/sarit-existdb/
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
+RUN ./start-and-kill-exist.sh
+
+
+# add sarit-data collection and restart to index
+ADD  ./sarit-data/build/sarit-data-0.1.xar \
+     /opt/lib/sarit-existdb/autodeploy/
+WORKDIR /opt/lib/sarit-existdb/
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
+RUN ./start-and-kill-exist.sh
+
+# install main command to run for image
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
 CMD ["/opt/lib/sarit-existdb/bin/startup.sh"]
 

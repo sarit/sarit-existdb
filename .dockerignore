@@ -2,3 +2,7 @@
 *
 !exist
 !lucene-transcoding-analyzer
+!sarit-pm/build/*xar
+!sarit-data/build/*xar
+!sarit-transliteration-exist-module/target/*xar
+!docker/start-and-kill-exist.sh
