@@ -1,0 +1,4 @@
+# in fact, specify includes here
+*
+!exist
+!lucene-transcoding-analyzer
