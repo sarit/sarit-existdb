@@ -21,6 +21,9 @@ e.g., from the root directory:
       cd ../
 #+END_SRC
 
+They will be copied into the docker image as is, and not compiled in
+the container.
+
 In case of success, run ~docker run sarit/webapp:0.1~.
 
 * Cheatsheet
