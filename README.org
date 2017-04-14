@@ -6,12 +6,15 @@ http://sarit.indology.info.
 It is not yet possible to do a completely automated install, but this
 guide should make it as painless as currently possible.[fn:1]
 
-You can get all the necessary components like this:
+You can compile and run a local version like this (your ~JAVA_HOME~
+might be different, though):
 
 #+BEGIN_SRC sh
 git clone --recursive https://github.com/sarit/sarit-existdb.git
 cd ./sarit-existdb/
-wget http://sanskritlibrary.org/software/transcodeFile.zip
+./bin/build.sh
+cd ./exist/
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre java -jar start.jar jetty
 #+END_SRC
 
 
@@ -159,6 +162,5 @@ You can check logs for the autodeployment in
 
 * Footnotes
 
-[fn:1] This is written with a typical Debian system in mind, and
-should work also for Ubuntu and similar.
+[fn:1] This is a recipe for a typical Debian testing system.
 

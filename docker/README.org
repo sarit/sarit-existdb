@@ -7,7 +7,19 @@ To build a local docker image, run
 docker build -f docker/Dockerfile -t sarit/webapp:0.1 . > /tmp/docker-build.log 2>&1
 #+END_SRC
 
-from this repository’s root directory (file:../).
+from this repository’s root directory (file:../).  
+
+It is important that you have previously managed to build the various
+submodules (*.xar files), and cleaned the file:../exist/ directory,
+e.g., from the root directory:
+
+#+BEGIN_SRC sh 
+  ./bin/build.sh && \
+      cd ./exist/ && \
+      JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh clean && \
+      JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh clean-all && \
+      cd ../
+#+END_SRC
 
 In case of success, run ~docker run sarit/webapp:0.1~.
 

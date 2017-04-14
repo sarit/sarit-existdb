@@ -24,13 +24,9 @@ RUN unzip transcodeFile.zip && \
     cd ../ && rm -rf ./slp/
 
 # install the lucene module
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
+WORKDIR /opt/lib/sarit-existdb/
 ADD ./lucene-transcoding-analyzer/ ./lucene-transcoding-analyzer/
-WORKDIR ./lucene-transcoding-analyzer/
-RUN mvn clean install -DskipTests && \
-    rm -rf ./lucene-transcoding-analyzer/
-
-# set up existdb
-## add necessary modules
 ADD ./docker/start-and-kill-exist.sh /opt/lib/sarit-existdb/
 ADD ./exist/ /opt/lib/sarit-existdb/
 ADD ./sarit-pm/build/sarit-pm-0.2.xar \
@@ -43,10 +39,11 @@ ADD http://dome.exist-db.org/exist/apps/public-repo/public/expath-pdf-exist-lib-
     /opt/lib/sarit-existdb/autodeploy/
 ADD http://demo.exist-db.org/exist/apps/public-repo/public/tei-pm-1.1.2.xar \
     /opt/lib/sarit-existdb/autodeploy/
-# and compile
-WORKDIR /opt/lib/sarit-existdb/
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
-RUN /opt/lib/sarit-existdb/build.sh
+RUN cd ./lucene-transcoding-analyzer/ && \
+    mvn clean install -DskipTests && \
+    cd ../ && \
+    /opt/lib/sarit-existdb/build.sh    
+
 
 # start up once to load everything from autodeploy
 WORKDIR /opt/lib/sarit-existdb/
