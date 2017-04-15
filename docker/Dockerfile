@@ -9,9 +9,6 @@ RUN apt-get update && \
     npm install -g grunt-cli && \
     apt-get clean
 
-# RUN curl -o- https://raw.githubusercontent.com/sarit/sarit-existdb/master/bin/install.sh | bash
-# RUN curl -o- http://localhost:9876/install.sh | bash
-
 # install the transcoder
 ADD http://sanskritlibrary.org/software/transcodeFile.zip /tmp/slp/
 WORKDIR /tmp/slp/
@@ -40,9 +37,9 @@ ADD ./docker/start-and-kill-exist.sh ./
 RUN ./build.sh clean && \
     ./build.sh 
 
-## build or get the required exist modules
+# build or get the required exist modules
 
-### sarit-transliteration-exist-module
+## sarit-transliteration-exist-module
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
 WORKDIR /opt/lib/sarit-existdb/sarit-transliteration-exist-module/
 ADD ./sarit-transliteration-exist-module/ ./
@@ -50,7 +47,7 @@ RUN mvn clean package && \
     cp ./target/sarit-transliteration-exist-module-0.0.8.xar ../exist/autodeploy/ && \
     rm -rf ../sarit-transliteration-exist-module/
 
-### sarit-pm
+## sarit-pm
 WORKDIR /opt/lib/sarit-existdb/sarit-pm/
 ADD ./sarit-pm ./
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
@@ -59,7 +56,7 @@ RUN ../exist/build.sh && \
     rm -rf ../sarit-pm/
 
 
-# start up once to load everything from autodeploy
+## start up once to load everything from autodeploy
 WORKDIR /opt/lib/sarit-existdb/exist/
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
 ADD http://demo.exist-db.org/exist/apps/public-repo/public/tei-publisher-lib-2.0.3.xar \
@@ -71,7 +68,7 @@ ADD http://demo.exist-db.org/exist/apps/public-repo/public/tei-pm-1.1.2.xar \
 RUN ./start-and-kill-exist.sh
 
 
-# add sarit-data collection and restart to index
+## add sarit-data collection and restart to index
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
 WORKDIR /opt/lib/sarit-existdb/sarit-data/
 ADD ./sarit-data/ ./
@@ -82,7 +79,7 @@ RUN ../exist/build.sh && \
     rm -rf \
        ../sarit-data/ \
        ./autodeploy \
-       ./extensions 	
+       ./extensions
 
 # install main command to run for image
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
