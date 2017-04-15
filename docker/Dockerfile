@@ -79,9 +79,13 @@ RUN ../exist/build.sh && \
     mv ./build/sarit-data-0.1.xar ../exist/autodeploy/ && \
     cd ../exist/ && \
     ./start-and-kill-exist.sh && \
-    rm -rf ../sarit-data/
+    rm -rf \
+       ../sarit-data/ \
+       ./autodeploy \
+       ./extensions 	
 
 # install main command to run for image
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
+WORKDIR /opt/lib/sarit-existdb/
 CMD ["/opt/lib/sarit-existdb/exist/bin/startup.sh"]
 
