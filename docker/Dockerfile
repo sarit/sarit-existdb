@@ -4,7 +4,7 @@ LABEL source="https://github.com/sarit/sarit-existdb"
 
 # os requirements for SARIT’s eXistdb instance
 RUN apt-get update && \
-    apt-get -y --no-install-recommends install ant npm && \
+    apt-get -y --no-install-recommends install ant npm nodejs-legacy && \
     apt-get -y --no-install-recommends -t jessie-backports install maven && \
     npm install -g grunt-cli && \
     apt-get clean
@@ -26,10 +26,10 @@ RUN unzip transcodeFile.zip && \
 
 # install the lucene module
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
-ADD ./lucene-transcoding-analyzer/ ./lucene-transcoding-analyzer/
-RUN cd ./lucene-transcoding-analyzer/ && \
-    mvn clean install -DskipTests && \
-    mvn clean
+WORKDIR /opt/lib/sarit-existdb/lucene-transcoding-analyzer/
+ADD ./lucene-transcoding-analyzer/ ./
+RUN mvn clean install -DskipTests && \
+    rm -rf ../lucene-transcoding-analyzer/
 
 
 # compile the main exist stuff
@@ -48,7 +48,7 @@ WORKDIR /opt/lib/sarit-existdb/sarit-transliteration-exist-module/
 ADD ./sarit-transliteration-exist-module/ ./
 RUN mvn clean package && \
     cp ./target/sarit-transliteration-exist-module-0.0.8.xar ../exist/autodeploy/ && \
-    mvn clean
+    rm -rf ../sarit-transliteration-exist-module/
 
 ### sarit-pm
 WORKDIR /opt/lib/sarit-existdb/sarit-pm/
@@ -73,10 +73,13 @@ RUN ./start-and-kill-exist.sh
 
 # add sarit-data collection and restart to index
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
-WORKDIR /opt/lib/sarit-existdb/exist/
-ADD  ./sarit-data/build/sarit-data-0.1.xar \
-     ./autodeploy/
-RUN ./start-and-kill-exist.sh
+WORKDIR /opt/lib/sarit-existdb/sarit-data/
+ADD ./sarit-data/ ./
+RUN ../exist/build.sh && \
+    mv ./build/sarit-data-0.1.xar ../exist/autodeploy/ && \
+    cd ../exist/ && \
+    ./start-and-kill-exist.sh && \
+    rm -rf ../sarit-data/
 
 # install main command to run for image
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre

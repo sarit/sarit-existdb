@@ -3,6 +3,8 @@
 !exist
 !lucene-transcoding-analyzer
 !sarit-pm/
-!sarit-data/build/*xar
+sarit-pm/node_modules
+!sarit-data/
+sarit-data/download/
 !sarit-transliteration-exist-module/
 !docker/start-and-kill-exist.sh
