@@ -29,6 +29,11 @@ mvn clean install -DskipTests
 cd "$ROOTDIR"
 
 echo "Building exist-db ..."
+if [ -f ./exist.local.build.properties ]
+then
+    echo "Found local build properties, using them for eXist"
+    cp ./exist.local.build.properties ./exist/local.build.properties
+fi
 cd ./exist/ ||  exit 1
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh clean
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh
