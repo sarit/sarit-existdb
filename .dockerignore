@@ -8,3 +8,4 @@ sarit-pm/node_modules
 sarit-data/download/
 !sarit-transliteration-exist-module/
 !docker/start-and-kill-exist.sh
+!exist.local.build.properties
