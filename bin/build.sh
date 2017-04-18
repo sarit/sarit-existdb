@@ -67,13 +67,6 @@ JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
 cp ./build/sarit-pm-0.2.xar ../exist/autodeploy/sarit-pm-0.2.xar
 cd "$ROOTDIR"
 
-echo "Fetching necessary modules ..."
-cd ./exist/autodeploy/ ||  exit 1
-wget http://demo.exist-db.org/exist/apps/public-repo/public/tei-publisher-lib-2.0.3.xar \
-     http://exist-db.org/exist/apps/public-repo/public/expath-pdf-exist-lib-0.0.4.xar \
-     http://demo.exist-db.org/exist/apps/public-repo/public/tei-pm-1.1.2.xar
-cd "$ROOTDIR"
-
 echo "Starting existdb to trigger autodeploy (#1) ..."
 cd ./exist/ ||  exit 1
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre java -jar start.jar jetty &
