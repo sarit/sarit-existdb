@@ -10,19 +10,15 @@ docker build -f docker/Dockerfile -t sarit/webapp:0.1 . > /tmp/docker-build.log 
 from this repository’s root directory (file:../).  
 
 It is important that you have previously managed to build the various
-submodules (*.xar files), and cleaned the file:../exist/ directory,
-e.g., from the root directory:
+submodules (*.xar files), e.g., from the root directory:
 
 #+BEGIN_SRC sh 
-  ./bin/build.sh && \
-      cd ./exist/ && \
-      JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh clean && \
-      JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh clean-all && \
-      cd ../
+  ./bin/build.sh
 #+END_SRC
 
-They will be copied into the docker image as is, and not compiled in
-the container.
+This creates the files necessary to run things in the docker image
+(see [[file:~/webstuff/sarit-webapp/exist-things/sarit-exist-webapp/.dockerignore][file:../.dockerignore]]).  They will be copied into the docker
+image as is, and not compiled in the container.
 
 In case of success, run ~docker run sarit/webapp:0.1~.
 
@@ -63,6 +59,37 @@ docker cp <CONTAINER-ID>:/opt/lib/sarit-existdb/exist/webapp/WEB-INF/logs/ /tmp/
  docker container rm CONTAINER
  docker rmi IMAGE # to remove an image
  #+END_SRC
+
+** Inspecting images
+
+#+BEGIN_SRC sh
+docker images
+docker history sarit/webapp:0.1
+docker history --no-trunc=true sarit/webapp:0.1
+#+END_SRC
+
+The ~history~ commands allow us to see the size of the intermediate
+images, the largest ones (~grep MB~) being:
+
+| Step/Note                                                                                         | Command                                                                                                       | Size    |
+|---------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------+---------|
+| Index file:../sarit-data                                                                          | /bin/sh -c ./start-and-kill-exist.sh                                                                          | 756 MB  |
+| Add file:../sarit-data/build/sarit-data-0.1.xar                                                   | /bin/sh -c #(nop) ADD file:cfe07d1c9758f0d7e9b0dec3fb8607658279485d7cf4917ddf915c31011819dd in ./autodeploy/  | 50.3 MB |
+| Start and stop exist to load file:../sarit-pm                                                     | /bin/sh -c ./start-and-kill-exist.sh                                                                          | 212 MB  |
+| Add file:../sarit-pm/build/sarit-pm-0.2.xar                                                       | /bin/sh -c #(nop) ADD file:f0c8b36f2481b44437b17639808c0ff5cd2fd185c80c17beca7f62bf13567b35 in ./             | 8.34 MB |
+| Add file:./sarit-transliteration-exist-module/target/sarit-transliteration-exist-module-0.0.8.xar | /bin/sh -c #(nop) ADD file:99da90335da1b334091995efafc8a671ebfcd2efe917e733a309af701d495f8b in ./             | 1.32 MB |
+| Build exist                                                                                       | /bin/sh -c ./build.sh clean && ./build.sh                                                                     | 214 MB  |
+| Add file:../lucene-transcoding-analyzer/target/lucene-transcoding-analyzer-0.1.7.jar              | /bin/sh -c #(nop) ADD file:af3b2d1e33ba6edbd68e78bad6c8098790c41f4c89c1ed537242dbb61551df44 in ./             | 1.15 MB |
+| Add http://sanskritlibrary.org/software/transcodeFile.zip                                         | /bin/sh -c #(nop) ADD tarsum.v1+sha256:28beb9039a1e465b515fc678c3c8daa4504187f2e6d58acc756175386294dbea in ./ | 1.97 MB |
+| Add exist source directory                                                                        | /bin/sh -c #(nop) ADD dir:2c54cf28d29d5888e598a9a3c852b87c0d8a9bdb3f3ec1099444490072e35af2 in ./              | 123 MB  |
+| Install build requirements for existdb                                                            | /bin/sh -c apt-get update && apt-get -y --no-install-recommends install ant && apt-get clean                  | 15.1 MB |
+
+
+In terms of size, it’s not very economical to deliver the fully
+indexed sarit-data collection.  But it does save time in startup: if
+we’d only use the ./autodeploy/ directory (saving 756MB + 212MB), we
+would have to rebuild and reindex everything on every ~docker run~
+command.
 
 * Resources
 
