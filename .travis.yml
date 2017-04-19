@@ -14,11 +14,11 @@ before_install:
   - apt-cache search maven
   - sudo apt-get purge maven maven2 maven3 -y
   - sudo apt-get install maven3 -y
-  - sudo npm install -g npm@latest
   - ant -version
   - mvn -version
   - pwd
   - ls -lh
+  - npm install -g npm@latest
   - npm install -g grunt-cli
   - ./.build_travis.sh
 
