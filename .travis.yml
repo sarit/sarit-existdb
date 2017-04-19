@@ -7,7 +7,7 @@ before_install:
   - mvn -version
   - pwd
   - ls -lh
-  - sudo npm install -g grunt-cli
+  - npm install -g grunt-cli
 
 
 script:
