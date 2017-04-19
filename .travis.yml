@@ -1,0 +1,10 @@
+language: bash
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -qq -y --no-install-recommends install ant npm nodejs-legacy
+  - sudo apt-get install -qq -y --no-install-recommends -t jessie-backports maven
+  - sudo npm install -g grunt-cli
+
+script:
+  - ./bin/build.sh
