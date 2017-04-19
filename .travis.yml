@@ -13,7 +13,8 @@ before_install:
   - sudo apt-get -q update
   - apt-cache search maven
   - sudo apt-get purge maven maven2 maven3 -y
-  - sudo apt-get install maven3 -y 
+  - sudo apt-get install maven3 -y
+  - sudo npm install -g npm@latest
   - ant -version
   - mvn -version
   - pwd
