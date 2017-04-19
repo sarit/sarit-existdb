@@ -9,14 +9,12 @@ services:
   - docker
 
 before_install:
-  - sudo add-apt-repository ppa:andrei-pozolotin/maven3 -y
   - sudo apt-get -q update
-  - apt-cache search maven
   - sudo apt-get purge maven maven2 maven3 -y
-  - sudo apt-get install -t ppa:andrei-pozolotin/maven3 maven3 -y
+  - wget http://mirror.klaus-uwe.me/apache/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.tar.gz
+  - tar zxf apache-maven-3.5.0-bin.tar.gz
   - ant -version
-  - mvn -version
-  - /usr/share/maven3/bin/mvn --version
+  - ./apache-maven-3.5.0/bin/mvn --version
   - pwd
   - ls -lh
   - npm install -g npm@latest
