@@ -16,6 +16,7 @@ before_install:
   - sudo apt-get install maven3 -y
   - ant -version
   - mvn -version
+  - /usr/share/maven3/bin/mvn --version
   - pwd
   - ls -lh
   - npm install -g npm@latest
