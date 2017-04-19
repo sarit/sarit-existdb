@@ -11,12 +11,13 @@ services:
 before_install:
   - sudo add-apt-repository ppa:andrei-pozolotin/maven3 -y
   - sudo apt-get -q update
+  - sudo apt-get purge maven maven2 maven3 -y
   - sudo apt-get install maven3 -y 
   - ant -version
   - mvn -version
   - pwd
   - ls -lh
-  - sudo npm install -g grunt-cli
+  - npm install -g grunt-cli
   - ./.build_travis.sh
 
 script:
