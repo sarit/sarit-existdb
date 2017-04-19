@@ -1,14 +1,20 @@
 dist: trusty
-sudo: false
+sudo: required
 language: node_js
+
+node_js:
+  - "7"
+
+services:
+  - docker
 
 before_install:
   - ant -version
   - mvn -version
   - pwd
   - ls -lh
-  - npm install -g grunt-cli
-
+  - sudo npm install -g grunt-cli
+  - ./.build_travis.sh
 
 script:
-  - ./bin/build.sh
+  - docker build -f docker-sarit-app/Dockerfile -t sarit-webapp .
