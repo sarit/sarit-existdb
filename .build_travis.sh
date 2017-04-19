@@ -13,7 +13,13 @@ fi
 ROOTDIR=$GITREMOTE
 STARTDIR=$(pwd)
 
-echo "Building things in $ROOTDIR/exist ..."
+echo "Getting and installing transcode library from sanskritlibrary.org ..."
+mkdir -p "$ROOTDIR"/blobs/ && cd "$ROOTDIR"/blobs/
+[ ! -f transcodeFile.zip ] && wget --quiet http://sanskritlibrary.org/software/transcodeFile.zip
+unzip -d ./ -j /tmp/transcodeFile.zip TranscodeFile/dist/lib/SanskritLibrary.jar
+mvn install:install-file -Dfile=./SanskritLibrary.jar -DgroupId=org.sanskritlibrary -DartifactId=sl -Dversion=0.1 -Dpackaging=jar
+cd "$ROOTDIR"
+
 
 echo "Installing lucene-transcoding-analyzer ..."
 cd ./lucene-transcoding-analyzer/ ||  exit 1
