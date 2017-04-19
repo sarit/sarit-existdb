@@ -11,6 +11,7 @@ services:
 before_install:
   - sudo add-apt-repository ppa:andrei-pozolotin/maven3 -y
   - sudo apt-get -q update
+  - apt-cache search maven
   - sudo apt-get purge maven maven2 maven3 -y
   - sudo apt-get install maven3 -y 
   - ant -version
