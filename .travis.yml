@@ -1,9 +1,8 @@
 language: node_js
 
 before_install:
-  - ant -v
+  - ant -version
   - mvn -version
-  - npm -v
   - pwd
   - ls -lh
   - sudo npm install -g grunt-cli
