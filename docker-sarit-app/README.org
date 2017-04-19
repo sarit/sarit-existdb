@@ -29,6 +29,9 @@ contains a pre-built index of SARIT’s library and a full JDK.  Having
 the index in place saves start-up time for the image, and the JDK is
 necessary for building exist (see [[file:~/webstuff/sarit-webapp/exist-things/sarit-exist-webapp/README.org::exist-bugs][file:../README.org::exist-bugs]]).
 
+*SECURITY NOTICE*: no attempt is made to set up password protection,
+the username is the default, "admin", and the password is empty.
+
 * Building the images
 
 If you want to put your own data into a local version of SARIT’s
