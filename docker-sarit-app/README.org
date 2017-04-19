@@ -1,13 +1,21 @@
 #+TITLE: Docker image for SARIT’s web application
 
+* Building the images
 
-To build a local docker image, run
+If you want to put your own data into a local version of SARIT’s
+webapp, you can build a local docker image:
 
 #+BEGIN_SRC sh
-docker build -f docker/Dockerfile -t sarit/webapp:0.1 . > /tmp/docker-build.log 2>&1
+docker build -f docker-sarit-app/Dockerfile -t sarit-webapp . > /tmp/docker-build.log 2>&1
 #+END_SRC
 
-from this repository’s root directory (file:../).  
+from this repository’s root directory (file:../).  This will build the
+webapp alone, without SARIT’s library.  To build a version with the
+data, run
+
+#+BEGIN_SRC sh
+docker build -f docker-sarit-data/Dockerfile -t sarit-webapp-with-data . > /tmp/docker-build.log 2>&1
+#+END_SRC
 
 It is important that you have previously managed to build the various
 submodules (*.xar files), e.g., from the root directory:
@@ -20,9 +28,9 @@ This creates the files necessary to run things in the docker image
 (see [[file:~/webstuff/sarit-webapp/exist-things/sarit-exist-webapp/.dockerignore][file:../.dockerignore]]).  They will be copied into the docker
 image as is, and not compiled in the container.
 
-In case of success, run ~docker run sarit/webapp:0.1~.
+In case of success, run ~docker run sarit-webapp-with-data~.
 
-* Cheatsheet
+* Docker cheat-sheet
 
 ** Find containers
 

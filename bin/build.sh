@@ -75,7 +75,7 @@ echo "Waiting for existdb to load completely ($EXPROC) ..."
 sleep 5
 grep -m 1 "Server has started, listening on" <(tail -f "$ROOTDIR"/exist/webapp/WEB-INF/logs/exist.log)
 echo "Shutting down existdb ($EXPROC) ..."
-kill -SIGTERM $EXPROC
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/shutdown.sh
 cd "$ROOTDIR"
 
 echo "Deploying sarit-data ..."
@@ -91,8 +91,8 @@ EXPROC=$!
 echo "Waiting for completion of existdb ..."
 sleep 5
 grep -m 1 "Server has started, listening on" <(tail -f "$ROOTDIR"/exist/webapp/WEB-INF/logs/exist.log)
-echo "Shut down existdb ($EXPROC) ..."
-kill -SIGTERM $EXPROC
+echo "Shutting down existdb ($EXPROC) ..."
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/shutdown.sh
 
 echo "Done, run 'JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre $ROOTDIR/exist/bin/startup.sh' to start the server."
 

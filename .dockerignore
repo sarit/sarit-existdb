@@ -1,8 +1,10 @@
 # in fact, specify includes here
 *
 !exist
+!bin
 !lucene-transcoding-analyzer/target/lucene-transcoding-analyzer-0.1.7.jar
-!docker
+!docker-sarit-app
+!docker-sarit-data
 !exist.local.build.properties
 !sarit-transliteration-exist-module/target/sarit-transliteration-exist-module-0.0.8.xar
 !sarit-pm/build/sarit-pm-0.2.xar

@@ -160,6 +160,15 @@ You can check logs for the autodeployment in
 
 - To be done when manual works well.
 
+
+* Bugs to keep in mind
+
+1) https://github.com/eXist-db/exist/issues/1382: makes it difficult to dockerize
+   1) more precisely, we can’t just build a dist from a locally installed version
+   2) possible solution: build to same path as in docker?
+2) https://github.com/eXist-db/exist/issues/1352
+   1) makes it impossible to produce a .war file (that could easily be deployed)
+
 * Footnotes
 
 [fn:1] This is a recipe for a typical Debian testing system.
