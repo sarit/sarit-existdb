@@ -1,13 +1,13 @@
-language: bash
+language: node_js
 
 before_install:
-  - curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
-  - sudo apt-get update
-  - sudo apt-get install -y nodejs
-  - sudo npm install -g grunt-cli
+  - ant -v
   - mvn -version
+  - npm -v
   - pwd
-  - ls -lh 
+  - ls -lh
+  - sudo npm install -g grunt-cli
+
 
 script:
   - ./bin/build.sh
