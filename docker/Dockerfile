@@ -29,17 +29,16 @@ WORKDIR /opt/lib/sarit-existdb/exist/
 ADD ./docker/start-and-kill-exist.sh ./
 ADD ./exist.local.build.properties ./local.build.properties
 RUN ./build.sh clean && \
+    ./build.sh clean-all && \
+    ./build.sh clean-default-data-dir && \
     ./build.sh 
 
 # build or get the required exist modules
 
-## sarit-transliteration-exist-module
+## sarit-transliteration-exist-module and sarit-pm
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
 WORKDIR /opt/lib/sarit-existdb/exist/autodeploy
 ADD ./sarit-transliteration-exist-module/target/sarit-transliteration-exist-module-0.0.8.xar ./
-
-## sarit-pm
-WORKDIR /opt/lib/sarit-existdb/exist/autodeploy
 ADD ./sarit-pm/build/sarit-pm-0.2.xar ./
 
 ## start up once to load everything from autodeploy
