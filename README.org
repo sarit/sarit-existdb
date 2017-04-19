@@ -4,7 +4,9 @@ This repository collects the various modules needed to run
 http://sarit.indology.info.
 
 It is not yet possible to do a completely automated install, but this
-guide should make it as painless as currently possible.[fn:1]
+guide should make it as painless as currently possible (at least for a
+typical Debian testing system; see [[file:docker-sarit-app/README.org]]
+for a click and go solution).
 
 You can compile and run a local version like this (your ~JAVA_HOME~
 might be different, though):
@@ -161,7 +163,11 @@ You can check logs for the autodeployment in
 - To be done when manual works well.
 
 
-* Bugs to keep in mind
+* Important Bugs 
+<<exist-bugs>>
+
+These bugs make it necessary (or at least easier) to compile the SARIT
+webapp on the host where it is being run:
 
 1) https://github.com/eXist-db/exist/issues/1382: makes it difficult to dockerize
    1) more precisely, we can’t just build a dist from a locally installed version
@@ -171,5 +177,5 @@ You can check logs for the autodeployment in
 
 * Footnotes
 
-[fn:1] This is a recipe for a typical Debian testing system.
+[fn:1] 
 

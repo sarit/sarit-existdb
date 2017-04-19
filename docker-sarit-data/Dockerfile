@@ -7,6 +7,4 @@ ADD ./sarit-data/build/sarit-data-0.1.xar ./autodeploy/
 RUN ./start-and-stop-exist.sh
 
 # install main command to run for image
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
-WORKDIR /opt/lib/sarit-existdb/
 CMD ["/opt/lib/sarit-existdb/exist/bin/startup.sh"]

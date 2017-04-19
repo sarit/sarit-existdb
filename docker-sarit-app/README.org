@@ -1,9 +1,39 @@
 #+TITLE: Docker image for SARIT’s web application
 
+* Running the default image
+
+If you have [[https://www.docker.com/][docker]] installed, you should be able to run a pre-built
+image like this:
+
+~docker run patmcall/sarit-existdb~ 
+
+After a while, something like this should appear:
+
+#+BEGIN_SRC sh
+19 Apr 2017 12:16:17,721 [main] INFO  (JettyStart.java [run]:257) - ----------------------------------------------------- 
+19 Apr 2017 12:16:17,722 [main] INFO  (JettyStart.java [run]:258) - Server has started, listening on: 
+19 Apr 2017 12:16:17,723 [main] INFO  (JettyStart.java [run]:260) -     http://172.17.0.42:8080/ 
+19 Apr 2017 12:16:17,724 [main] INFO  (JettyStart.java [run]:260) -     https://172.17.0.42:8443/ 
+19 Apr 2017 12:16:17,724 [main] INFO  (JettyStart.java [run]:263) - Configured contexts: 
+19 Apr 2017 12:16:17,726 [main] INFO  (JettyStart.java [run]:269) -     /exist 
+19 Apr 2017 12:16:17,727 [main] INFO  (JettyStart.java [run]:269) -     / 
+19 Apr 2017 12:16:17,727 [main] INFO  (JettyStart.java [run]:323) - ----------------------------------------------------- 
+#+END_SRC
+
+This tells you where you can access the existdb instance, in this case
+~http://172.17.0.42:8080/~.
+
+
+The image is *large*, slightly more than 2 GB: this is because it
+contains a pre-built index of SARIT’s library and a full JDK.  Having
+the index in place saves start-up time for the image, and the JDK is
+necessary for building exist (see [[file:~/webstuff/sarit-webapp/exist-things/sarit-exist-webapp/README.org::exist-bugs][file:../README.org::exist-bugs]]).
+
 * Building the images
 
 If you want to put your own data into a local version of SARIT’s
-webapp, you can build a local docker image:
+webapp or change something in the application, you can build a local
+docker image:
 
 #+BEGIN_SRC sh
 docker build -f docker-sarit-app/Dockerfile -t sarit-webapp . > /tmp/docker-build.log 2>&1
