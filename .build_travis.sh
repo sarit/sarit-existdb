@@ -28,7 +28,7 @@ cd "$ROOTDIR"
 
 echo "Building sarit-transliteration-exist-module ..."
 cd ./sarit-transliteration-exist-module/ ||  exit 1
-mvn clean package
+/usr/share/maven3/bin/mvn clean package
 cd "$ROOTDIR"
 
 echo "Building sarit-data ..."
