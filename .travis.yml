@@ -25,3 +25,10 @@ before_install:
 
 script:
   - docker build -f docker-sarit-app/Dockerfile -t sarit-webapp .
+
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push patmcall/sarit-existdb;
+    fi
