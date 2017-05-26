@@ -47,9 +47,11 @@ sudo aptitude install openjdk-8-jdk maven nodejs npm
 
 ** eXist-db
 
+*CAREFUL, this WILL delete your data!*
+
 #+BEGIN_SRC sh :results raw output
 cd ./exist/
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh clean
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh clean-all
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh
 #+END_SRC
 
@@ -93,8 +95,8 @@ JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
 #+END_SRC
 
 This should give you something like
-~./sarit-data/build/sarit-data-0.1.xar~, which you should install via
-the dashboard, http://127.0.0.1:8080/exist/apps/dashboard/index.html.
+~./sarit-data/build/sarit-data-0.1.xar~, which you can install via the
+dashboard, http://127.0.0.1:8080/exist/apps/dashboard/index.html.
 
 You might also want to update the data collection, by visiting:
 http://127.0.0.1:8080/exist/apps/sarit-data/index.html.
@@ -111,16 +113,14 @@ JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
 #+END_SRC
 
 This should give you something like
-~./sarit-pm/build/sarit-pm-0.2.xar~, which you should also install via
-the dashboard, http://127.0.0.1:8080/exist/apps/dashboard/index.html.
+~./sarit-pm/build/sarit-pm-0.2.xar~, which you can install via the
+dashboard, http://127.0.0.1:8080/exist/apps/dashboard/index.html.
 
 
 Now, check if it worked: 
 
 - http://127.0.0.1:8080/exist/apps/sarit-pm/works/
 - or http://127.0.0.1:8080/exist/apps/sarit-pm/works/search.html?query=*lak%E1%B9%A3a%E1%B9%87*+AND+*pratyak%E1%B9%A3*&field=text&tei-target=tei-text&work-authors=all
-
-
 
 ** With ~autodeploy/~
 

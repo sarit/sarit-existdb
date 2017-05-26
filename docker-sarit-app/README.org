@@ -34,34 +34,47 @@ the username is the default, "admin", and the password is empty.
 
 * Building the images
 
-If you want to put your own data into a local version of SARIT’s
-webapp or change something in the application, you can build a local
-docker image:
+  If you want to build your own local docker images, it is important
+ that you have previously managed to build the various submodules
+ (*.xar files), e.g., from the root directory:
 
-#+BEGIN_SRC sh
-docker build -f docker-sarit-app/Dockerfile -t sarit-webapp . > /tmp/docker-build.log 2>&1
-#+END_SRC
+ #+BEGIN_SRC sh 
+   ./bin/build.sh
+ #+END_SRC
 
-from this repository’s root directory (file:../).  This will build the
-webapp alone, without SARIT’s library.  To build a version with the
-data, run
+ This creates the files necessary to run things in the docker image
+ (see [[file:~/webstuff/sarit-webapp/exist-things/sarit-exist-webapp/.dockerignore][file:../.dockerignore]]).  They will be copied into the docker
+ image as is, and not compiled in the container.
 
-#+BEGIN_SRC sh
-docker build -f docker-sarit-data/Dockerfile -t sarit-webapp-with-data . > /tmp/docker-build.log 2>&1
-#+END_SRC
+** Without the current data
 
-It is important that you have previously managed to build the various
-submodules (*.xar files), e.g., from the root directory:
+ If you want to put your own data into a local version of SARIT’s
+ webapp or change something in the application, you can build a local
+ docker image:
 
-#+BEGIN_SRC sh 
-  ./bin/build.sh
-#+END_SRC
+ #+BEGIN_SRC sh
+ docker build -f docker-sarit-app/Dockerfile -t sarit-webapp . > /tmp/docker-build.log 2>&1
+ #+END_SRC
 
-This creates the files necessary to run things in the docker image
-(see [[file:~/webstuff/sarit-webapp/exist-things/sarit-exist-webapp/.dockerignore][file:../.dockerignore]]).  They will be copied into the docker
-image as is, and not compiled in the container.
+ from this repository’s root directory (file:../).  This will build the
+ webapp alone, without SARIT’s library. 
 
-In case of success, run ~docker run sarit-webapp-with-data~.
+
+** With the current data
+
+To build a version with the data, run
+
+ #+BEGIN_SRC sh
+ docker build -f docker-sarit-data/Dockerfile -t sarit-webapp-with-data . > /tmp/docker-build.log 2>&1
+ #+END_SRC
+
+
+** Run the images
+
+ In case of success, run ~docker run sarit-webapp-with-data~.
+
+
+
 
 * Docker cheat-sheet
 
