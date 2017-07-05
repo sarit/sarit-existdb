@@ -71,9 +71,14 @@ To build a version with the data, run
 
 ** Run the images
 
- In case of success, run ~docker run sarit-webapp-with-data~.
+ In case of success, run:
 
+#+BEGIN_SRC bash
+docker run --rm -p 127.0.0.1:8080:8080 --name sarit-webapp-with-data sarit-webapp-with-data:latest
+#+END_SRC
 
+which should allow you to see the SARIT app on
+http://localhost:8080/exist/apps/sarit-pm/works/.
 
 
 * Docker cheat-sheet
