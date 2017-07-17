@@ -1,5 +1,6 @@
 FROM openjdk:8-jdk
-LABEL source="https://github.com/sarit/sarit-existdb" 
+LABEL source="https://github.com/sarit/sarit-existdb"
+LABEL variant="without sarit data"
 
 
 # requirements to build SARIT’s eXistdb instance
