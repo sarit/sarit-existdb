@@ -2,7 +2,6 @@ FROM openjdk:8-jdk
 LABEL source="https://github.com/sarit/sarit-existdb"
 LABEL variant="without sarit data"
 
-
 # requirements to build SARIT’s eXistdb instance
 RUN apt-get update && \
     apt-get -y --no-install-recommends install ant && \
@@ -11,6 +10,7 @@ RUN apt-get update && \
 # compile the main exist stuff
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
 WORKDIR /opt/lib/sarit-existdb/exist/
+RUN pwd && ls -lha && ./bin/build.sh
 # add exist sources
 ADD ./exist/ ./
 # add the transcoder
