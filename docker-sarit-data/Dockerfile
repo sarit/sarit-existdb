@@ -1,4 +1,4 @@
-FROM sarit-webapp
+FROM sarit-webapp:latest
 
 # ## add sarit-data collection and restart to index
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre

@@ -7,7 +7,7 @@ if [ -d .git ] && git remote -v | grep -q -i "sarit-existdb.git"
 then
     GITREMOTE="$(git rev-parse --show-toplevel)"
 else
-    echo "You have to call this script from the root directory of your version of https://github.com/sarit/sarit-existdb.git into."
+    echo "You have to call this script from the root directory of your version of https://github.com/sarit/sarit-existdb.git."
     exit 1
 fi
 

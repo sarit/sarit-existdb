@@ -61,6 +61,7 @@ the username is the default, "admin", and the password is empty.
 
 
 ** With the current data
+<<docker-build-with-data>>
 
 To build a version with the data, run
 
@@ -68,6 +69,9 @@ To build a version with the data, run
  docker build -f docker-sarit-data/Dockerfile -t sarit-webapp-with-data . > /tmp/docker-build.log 2>&1
  #+END_SRC
 
+Note that this builds on the previous image, so if you have updated
+both the application and the data you will need to rebuild *both*
+images.
 
 ** Run the images
 
