@@ -1,1 +1,0 @@
-See notes in [[file:../docker-sarit-app/README.org::docker-build-with-data][docker sarit app]].

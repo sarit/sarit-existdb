@@ -1,44 +1,52 @@
-FROM openjdk:8-jdk
-LABEL source="https://github.com/sarit/sarit-existdb"
-LABEL variant="without sarit data"
+# this builds everything from the online repositories (under
+# https://github.com/sarit), ignoring local modifications
+FROM openjdk:8-jdk as build_exist
+
+# set up for compilation of the main exist stuff: git clone things
+# first, saves some time on rebuilding (when repos haven’t changed)
+# ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
+ENV APP_HOME /opt/lib/sarit-existdb
+WORKDIR /opt/lib/
+RUN git clone --depth 1 https://github.com/sarit/sarit-existdb.git $APP_HOME && \
+    cd $APP_HOME && \
+    git submodule update --init --depth 20    
 
 # requirements to build SARIT’s eXistdb instance
+# RUN cat /etc/apt/sources.list
 RUN apt-get update && \
-    apt-get -y --no-install-recommends install ant && \
+    apt-get --quiet --yes --no-install-recommends install ant maven xmlstarlet curl build-essential && \
     apt-get clean
+    
+# the annoying nodejs stuff
+WORKDIR $APP_HOME
+RUN curl -sL https://deb.nodesource.com/setup_4.x | bash - && \
+    apt-get --quiet --yes install nodejs
+    
+# RUN npm update -g npm && \
+#     npm install -g grunt-cli && \
+#     npm install -g grunt
 
-# compile the main exist stuff
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
-WORKDIR /opt/lib/sarit-existdb/exist/
-RUN pwd && ls -lha && ./bin/build.sh
-# add exist sources
-ADD ./exist/ ./
-# add the transcoder
-ADD http://sanskritlibrary.org/software/transcodeFile.zip /tmp
-RUN unzip -d ./lib/user/ -j /tmp/transcodeFile.zip TranscodeFile/dist/lib/SanskritLibrary.jar && \
-    rm /tmp/transcodeFile.zip
-# add the lucene module
-ADD ./lucene-transcoding-analyzer/target/lucene-transcoding-analyzer-0.1.7.jar ./lib/user/
-# add start stop utility
-ADD ./bin/start-and-stop-exist.sh ./
-ADD ./exist.local.build.properties ./local.build.properties
+## debug a bit
+# RUN pwd && ls -lha && tree && ./bin/build.sh
 
-# build existdb
-RUN ./build.sh clean && \
-    ./build.sh clean-all && \
-    ./build.sh clean-default-data-dir && \
-    ./build.sh 
-
-# build or get the required exist modules
-
-## sarit-transliteration-exist-module and sarit-pm
-ADD ./sarit-transliteration-exist-module/target/sarit-transliteration-exist-module-0.0.8.xar ./autodeploy/
-ADD ./sarit-pm/build/sarit-pm-0.2.xar ./autodeploy/
+## build everything
+RUN ./bin/build.sh
 
 ## start up once to load everything from autodeploy
-RUN ./start-and-stop-exist.sh && \
+WORKDIR $APP_HOME/exist
+RUN ../bin/start-and-stop-exist.sh && \
     rm -rf ./autodeploy/
 
-# install main command to run for this image
-CMD ["/opt/lib/sarit-existdb/exist/bin/startup.sh"]
+FROM openjdk:8-jre as sarit_existdb
+# JAVA_HOME is set in 8-jre-alpine
+# ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
+ENV APP_HOME /opt/lib/sarit-existdb
+RUN mkdir -p $APP_HOME
+WORKDIR $APP_HOME
 
+# copy necessary things
+COPY --from=build_exist $APP_HOME/exist ./
+# RUN echo "DEBUG" && pwd && ls -lha
+# RUN ls -lh "./bin/startup.sh"
+# install main command to run for this image
+CMD ["/opt/lib/sarit-existdb/bin/startup.sh"]

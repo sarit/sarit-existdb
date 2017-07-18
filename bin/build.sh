@@ -3,6 +3,8 @@
 # This script builds SARIT's existdb application from your current
 # sources.
 
+# for Debian, use JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre as env
+
 if [ -d .git ] && git remote -v | grep -q -i "sarit-existdb.git"
 then
     GITREMOTE="$(git rev-parse --show-toplevel)"
@@ -20,12 +22,12 @@ mkdir -p "$ROOTDIR"/blobs/ && cd "$ROOTDIR"/blobs/
 echo "Getting and installing transcode library from sanskritlibrary.org ..."
 [ ! -f transcodeFile.zip ] && wget --quiet http://sanskritlibrary.org/software/transcodeFile.zip
 unzip -q -u transcodeFile.zip
-mvn install:install-file -Dfile=./TranscodeFile/dist/lib/SanskritLibrary.jar -DgroupId=org.sanskritlibrary -DartifactId=sl -Dversion=0.1 -Dpackaging=jar
+mvn --batch-mode --quiet install:install-file -Dfile=./TranscodeFile/dist/lib/SanskritLibrary.jar -DgroupId=org.sanskritlibrary -DartifactId=sl -Dversion=0.1 -Dpackaging=jar
 cd "$ROOTDIR"
 
 echo "Installing lucene-transcoding-analyzer ..."
 cd ./lucene-transcoding-analyzer/ ||  exit 1
-mvn clean install -DskipTests
+mvn --batch-mode --quiet clean install -DskipTests
 cd "$ROOTDIR"
 
 echo "Building exist-db ..."
@@ -35,13 +37,13 @@ then
     cp ./exist.local.build.properties ./exist/local.build.properties
 fi
 cd ./exist/ ||  exit 1
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh clean
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./build.sh
+ ./build.sh clean
+ ./build.sh
 cd "$ROOTDIR"
 
 echo "Building sarit-transliteration-exist-module ..."
 cd ./sarit-transliteration-exist-module/ ||  exit 1
-mvn clean package
+mvn --batch-mode --quiet clean package
 cp ./target/sarit-transliteration-exist-module-0.0.8.xar ../exist/autodeploy/
 cd "$ROOTDIR"
 
@@ -56,26 +58,26 @@ cd "$ROOTDIR"
 
 echo "Building sarit-data ..."
 cd ./sarit-data/ ||  exit 1
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
+ ../exist/build.sh
 ## don’t autodeploy yet --> depends on sarit-pm having been installed for index ?
 # cp ./build/sarit-data-0.1.xar ../exist/autodeploy/sarit-data-0.1.xar
 cd "$ROOTDIR"
 
 echo "Building sarit-pm ..."
 cd ./sarit-pm/ ||  exit 1
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../exist/build.sh
+ ../exist/build.sh
 cp ./build/sarit-pm-0.2.xar ../exist/autodeploy/sarit-pm-0.2.xar
 cd "$ROOTDIR"
 
 echo "Starting existdb to trigger autodeploy (#1) ..."
 cd ./exist/ ||  exit 1
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre java -jar start.jar jetty &
+ java -jar start.jar jetty &
 EXPROC=$!
 echo "Waiting for existdb to load completely ($EXPROC) ..."
 sleep 5
 grep -m 1 "Server has started, listening on" <(tail -f "$ROOTDIR"/exist/webapp/WEB-INF/logs/exist.log)
 echo "Shutting down existdb ($EXPROC) ..."
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/shutdown.sh
+ ./bin/shutdown.sh
 cd "$ROOTDIR"
 
 echo "Deploying sarit-data ..."
@@ -86,15 +88,15 @@ cd "$ROOTDIR"
 
 echo "Starting existdb to trigger autodeploy of sarit-data, be patient #2 ..."
 cd ./exist/
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre java -jar start.jar jetty &
+ java -jar start.jar jetty &
 EXPROC=$!
 echo "Waiting for completion of existdb ..."
 sleep 5
 grep -m 1 "Server has started, listening on" <(tail -f "$ROOTDIR"/exist/webapp/WEB-INF/logs/exist.log)
 echo "Shutting down existdb ($EXPROC) ..."
-JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/shutdown.sh
+ ./bin/shutdown.sh
 
-echo "Done, run 'JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre $ROOTDIR/exist/bin/startup.sh' to start the server."
+echo "Done, run ' $ROOTDIR/exist/bin/startup.sh' to start the server."
 
 cd "$STARTDIR"
 

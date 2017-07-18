@@ -34,17 +34,13 @@ the username is the default, "admin", and the password is empty.
 
 * Building the images
 
-  If you want to build your own local docker images, it is important
- that you have previously managed to build the various submodules
- (*.xar files), e.g., from the root directory:
+1) file:./Dockerfile: this builds things from the upstream
+   (https://github.com/sarit) repositories.
 
- #+BEGIN_SRC sh 
-   ./bin/build.sh
- #+END_SRC
-
- This creates the files necessary to run things in the docker image
- (see [[file:~/webstuff/sarit-webapp/exist-things/sarit-exist-webapp/.dockerignore][file:../.dockerignore]]).  They will be copied into the docker
- image as is, and not compiled in the container.
+2) file:./Dockerfile_use_local: this recipe builds the application
+   from the locally available sources (usually the *.xar files in the
+   various submodules) (currently this is not working, just use the
+   build script in the meantime).
 
 ** Without the current data
 
