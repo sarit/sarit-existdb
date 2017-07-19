@@ -4,6 +4,8 @@ FROM openjdk:8-jdk
 
 # ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
 ENV APP_HOME /opt/lib/sarit-existdb
+RUN pwd && ls -lh && mkdir -p /opt/lib/sarit-existdb && ls -lh /opt/lib/sarit-existdb
+COPY . $APP_HOME
 WORKDIR $APP_HOME
 
 # set up for compilation of the main exist stuff: git clone things
@@ -40,8 +42,6 @@ RUN curl -sL https://deb.nodesource.com/setup_4.x | bash - && \
 
 ## debug a bit
 # RUN pwd && ls -lha && tree && ./bin/build.sh
-
-COPY . $APP_HOME
 
 ## build everything
 RUN pwd && ls -lh && ./bin/build.sh
