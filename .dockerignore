@@ -1,2 +1,8 @@
-# in fact, specify includes here
-*
+# don't send exist data
+./exist/webapp/WEB-INF/data
+./exist/autodeploy
+/backup/
+./exist/dist
+./sarit-pm/node_modules
+./sarit-pm/build/
+./sarit-data/build

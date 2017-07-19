@@ -1,15 +1,15 @@
 # this builds everything from the online repositories (under
 # https://github.com/sarit), ignoring local modifications
-FROM openjdk:8-jdk as build_exist
+FROM openjdk:8-jdk
 
 # set up for compilation of the main exist stuff: git clone things
 # first, saves some time on rebuilding (when repos haven’t changed)
 # ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
 ENV APP_HOME /opt/lib/sarit-existdb
 WORKDIR /opt/lib/
-RUN git clone --depth 1 https://github.com/sarit/sarit-existdb.git $APP_HOME && \
-    cd $APP_HOME && \
-    git submodule update --init --depth 20    
+# RUN git clone --depth 1 https://github.com/sarit/sarit-existdb.git $APP_HOME && \
+#     cd $APP_HOME && \
+#     git submodule update --init --depth 20    
 
 # requirements to build SARIT’s eXistdb instance
 # RUN cat /etc/apt/sources.list
