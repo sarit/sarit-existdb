@@ -14,39 +14,57 @@ RUN git clone --depth 1 https://github.com/sarit/sarit-existdb.git $APP_HOME && 
 # requirements to build SARIT’s eXistdb instance
 # RUN cat /etc/apt/sources.list
 RUN apt-get update && \
-    apt-get --quiet --yes --no-install-recommends install ant maven xmlstarlet curl build-essential && \
+    apt-get --quiet --yes --no-install-recommends install \
+	    build-essential \
+	    curl \
+	    maven \
+	    xmlstarlet \
+    	    ant \
+	    libpng-dev \
+	    && \
     apt-get clean
     
 # the annoying nodejs stuff
 WORKDIR $APP_HOME
 RUN curl -sL https://deb.nodesource.com/setup_4.x | bash - && \
-    apt-get --quiet --yes install nodejs
-    
-# RUN npm update -g npm && \
-#     npm install -g grunt-cli && \
-#     npm install -g grunt
+    apt-get --quiet --yes install nodejs && \
+    apt-get clean
+
+
+# apt-get install grunt didn’t work, so install it globally here
+# (symptoms as in
+# https://stackoverflow.com/questions/15444020/cannot-find-module-findup-sync-when-trying-to-run-grunt#21107061)
+RUN npm update -g npm && \
+    npm install -g grunt-cli && \
+    npm install -g grunt
+
+# last step verifies that grunt is working in general
+# RUN env && echo $PATH && apt-cache search -f findup && which grunt && grunt -V -v
 
 ## debug a bit
 # RUN pwd && ls -lha && tree && ./bin/build.sh
 
 ## build everything
-RUN ./bin/build.sh
+RUN ./bin/build.sh  && true
 
 ## start up once to load everything from autodeploy
 WORKDIR $APP_HOME/exist
-RUN ../bin/start-and-stop-exist.sh && \
-    rm -rf ./autodeploy/
+RUN ../bin/start-and-stop-exist.sh
 
 FROM openjdk:8-jre as sarit_existdb
-# JAVA_HOME is set in 8-jre-alpine
+# JAVA_HOME is already set in the openjdk:xy images
 # ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
-ENV APP_HOME /opt/lib/sarit-existdb
+
+# this must be the same path as in the build environment, exist
+# doesn’t do relative paths
+ENV BUILD_APP_HOME /opt/lib/sarit-existdb
+ENV APP_HOME /opt/lib/sarit-existdb/exist
 RUN mkdir -p $APP_HOME
 WORKDIR $APP_HOME
 
 # copy necessary things
-COPY --from=build_exist $APP_HOME/exist ./
+COPY --from=build_exist $BUILD_APP_HOME/exist ./
 # RUN echo "DEBUG" && pwd && ls -lha
 # RUN ls -lh "./bin/startup.sh"
 # install main command to run for this image
-CMD ["/opt/lib/sarit-existdb/bin/startup.sh"]
+CMD ["/opt/lib/sarit-existdb/exist/bin/startup.sh"]

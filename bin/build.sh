@@ -47,14 +47,15 @@ mvn --batch-mode --quiet clean package
 cp ./target/sarit-transliteration-exist-module-0.0.8.xar ../exist/autodeploy/
 cd "$ROOTDIR"
 
-echo "Updating sarit-data collection  ..."
-cd ./sarit-data/data/ ||  exit 1
-for xml in $(xmlstarlet sel -N xi='http://www.w3.org/2001/XInclude' -T -t -m "//xi:include[@href]" -v "concat(\"$ROOTDIR/SARIT-corpus/\", ./@href)" -n   "$ROOTDIR"/SARIT-corpus/saritcorpus.xml)
-do
-    echo "Updating $xml ..."
-    cp "$xml" ./
-done
-cd "$ROOTDIR"
+## better just keep sarit-data up to date
+# echo "Updating sarit-data collection  ..."
+# cd ./sarit-data/data/ ||  exit 1
+# for xml in $(xmlstarlet sel -N xi='http://www.w3.org/2001/XInclude' -T -t -m "//xi:include[@href]" -v "concat(\"$ROOTDIR/SARIT-corpus/\", ./@href)" -n   "$ROOTDIR"/SARIT-corpus/saritcorpus.xml)
+# do
+#     echo "Updating $xml ..."
+#     cp "$xml" ./
+# done
+# cd "$ROOTDIR"
 
 echo "Building sarit-data ..."
 cd ./sarit-data/ ||  exit 1
