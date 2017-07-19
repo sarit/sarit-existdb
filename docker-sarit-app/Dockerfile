@@ -6,7 +6,9 @@ FROM openjdk:8-jdk
 ENV APP_HOME /opt/lib/sarit-existdb
 RUN pwd && ls -lh && mkdir -p /opt/lib/sarit-existdb && ls -lh /opt/lib/sarit-existdb
 COPY . $APP_HOME
+RUN pwd && ls -lh && ls -lh /opt/lib/sarit-existdb
 WORKDIR $APP_HOME
+RUN pwd && ls -lh && ls -lh /opt/lib/sarit-existdb
 
 # set up for compilation of the main exist stuff: git clone things
 # first, saves some time on rebuilding (when repos haven’t changed)
