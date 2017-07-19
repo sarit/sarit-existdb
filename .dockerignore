@@ -1,3 +1,4 @@
+./.git
 # don't send exist data
 ./exist/webapp/WEB-INF/data
 ./exist/autodeploy
