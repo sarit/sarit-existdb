@@ -27,7 +27,7 @@ This tells you where you can access the existdb instance, in this case
 The image is *large*, slightly more than 2 GB: this is because it
 contains a pre-built index of SARIT’s library and a full JDK.  Having
 the index in place saves start-up time for the image, and the JDK is
-necessary for building exist (see [[file:~/webstuff/sarit-webapp/exist-things/sarit-exist-webapp/README.org::exist-bugs][file:../README.org::exist-bugs]]).
+necessary for building exist (see [[file:./README.org::exist-bugs][file:./README.org::exist-bugs]]).
 
 *SECURITY NOTICE*: no attempt is made to set up password protection,
 the username is the default, "admin", and the password is empty.
@@ -52,7 +52,7 @@ the username is the default, "admin", and the password is empty.
  docker build -f docker-sarit-app/Dockerfile -t sarit-webapp . > /tmp/docker-build.log 2>&1
  #+END_SRC
 
- from this repository’s root directory (file:../).  This will build the
+ from this repository’s root directory (file:./).  This will build the
  webapp alone, without SARIT’s library. 
 
 
@@ -132,13 +132,13 @@ images, the largest ones (~grep MB~) being:
 
 | Step/Note                                                                                         | Command                                                                                                       | Size    |
 |---------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------+---------|
-| Index file:../sarit-data                                                                          | /bin/sh -c ./start-and-kill-exist.sh                                                                          | 756 MB  |
-| Add file:../sarit-data/build/sarit-data-0.1.xar                                                   | /bin/sh -c #(nop) ADD file:cfe07d1c9758f0d7e9b0dec3fb8607658279485d7cf4917ddf915c31011819dd in ./autodeploy/  | 50.3 MB |
+| Index file:./sarit-data                                                                          | /bin/sh -c ./start-and-kill-exist.sh                                                                          | 756 MB  |
+| Add file:./sarit-data/build/sarit-data-0.1.xar                                                   | /bin/sh -c #(nop) ADD file:cfe07d1c9758f0d7e9b0dec3fb8607658279485d7cf4917ddf915c31011819dd in ./autodeploy/  | 50.3 MB |
 | Start and stop exist to load file:../sarit-pm                                                     | /bin/sh -c ./start-and-kill-exist.sh                                                                          | 212 MB  |
-| Add file:../sarit-pm/build/sarit-pm-0.2.xar                                                       | /bin/sh -c #(nop) ADD file:f0c8b36f2481b44437b17639808c0ff5cd2fd185c80c17beca7f62bf13567b35 in ./             | 8.34 MB |
+| Add file:./sarit-pm/build/sarit-pm-0.2.xar                                                       | /bin/sh -c #(nop) ADD file:f0c8b36f2481b44437b17639808c0ff5cd2fd185c80c17beca7f62bf13567b35 in ./             | 8.34 MB |
 | Add file:./sarit-transliteration-exist-module/target/sarit-transliteration-exist-module-0.0.8.xar | /bin/sh -c #(nop) ADD file:99da90335da1b334091995efafc8a671ebfcd2efe917e733a309af701d495f8b in ./             | 1.32 MB |
 | Build exist                                                                                       | /bin/sh -c ./build.sh clean && ./build.sh                                                                     | 214 MB  |
-| Add file:../lucene-transcoding-analyzer/target/lucene-transcoding-analyzer-0.1.7.jar              | /bin/sh -c #(nop) ADD file:af3b2d1e33ba6edbd68e78bad6c8098790c41f4c89c1ed537242dbb61551df44 in ./             | 1.15 MB |
+| Add file:./lucene-transcoding-analyzer/target/lucene-transcoding-analyzer-0.1.7.jar              | /bin/sh -c #(nop) ADD file:af3b2d1e33ba6edbd68e78bad6c8098790c41f4c89c1ed537242dbb61551df44 in ./             | 1.15 MB |
 | Add http://sanskritlibrary.org/software/transcodeFile.zip                                         | /bin/sh -c #(nop) ADD tarsum.v1+sha256:28beb9039a1e465b515fc678c3c8daa4504187f2e6d58acc756175386294dbea in ./ | 1.97 MB |
 | Add exist source directory                                                                        | /bin/sh -c #(nop) ADD dir:2c54cf28d29d5888e598a9a3c852b87c0d8a9bdb3f3ec1099444490072e35af2 in ./              | 123 MB  |
 | Install build requirements for existdb                                                            | /bin/sh -c apt-get update && apt-get -y --no-install-recommends install ant && apt-get clean                  | 15.1 MB |

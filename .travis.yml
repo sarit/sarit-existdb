@@ -11,6 +11,7 @@ services:
 before_install:
   - sudo apt-get -q update
   - sudo apt-get purge maven maven2 -y
+  - sudo apt-get upgrade -y docker-engine
   - wget http://mirror.klaus-uwe.me/apache/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.tar.gz
   - tar zxf apache-maven-3.5.0-bin.tar.gz
   - ant -version
@@ -24,7 +25,7 @@ before_install:
   - ./.build_travis.sh
 
 script:
-  - docker build -f docker-sarit-app/Dockerfile -t sarit-webapp .
+  - docker build -f Dockerfile -t sarit-webapp .
 
 
 after_success:
