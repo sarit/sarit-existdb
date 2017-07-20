@@ -1,35 +1,20 @@
 dist: trusty
 sudo: required
-language: node_js
-
-node_js:
-  - "7"
 
 services:
   - docker
 
 before_install:
-  - sudo apt-get -q update
-  - sudo apt-get purge maven maven2 -y
-  - sudo apt-get -y upgrade docker-ce
-  - wget http://mirror.klaus-uwe.me/apache/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.tar.gz
-  - tar zxf apache-maven-3.5.0-bin.tar.gz
-  - ant -version
-  - ./apache-maven-3.5.0/bin/mvn --version
-  - export M2_HOME=$PWD/apache-maven-3.5.0
-  - export PATH=$M2_HOME/bin:$PATH
-  - pwd
-  - ls -lh
-  - npm install -g npm@latest
-  - npm install -g grunt-cli
+  - docker pull patmcall/sarit-existdb:latest
+  - docker run -d -p 127.0.0.1:8080:8080 --name sarit-existdb patmcall/sarit-existdb:latest
 
 script:
-  - ./bin/build.sh
-  - docker build -f Dockerfile -t sarit-webapp .
+  - curl "http://127.0.0.1:8080/exist/apps/sarit-pm/works/" | grep -E -i 'currently contains [1-9][0-9]+'
+  - curl "http://127.0.0.1:8080/exist/apps/sarit-pm/works/search.html?query=*pratyak%E1%B9%A3*&field=text&tei-target=tei-text&work-authors=all&target-texts=avayavinir%C4%81kara%E1%B9%87a" | grep -E '<span id="hit-count">[1-9]+</span>'
 
 
-after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
-    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push patmcall/sarit-existdb;
-    fi
+# after_success:
+#   - if [ "$TRAVIS_BRANCH" == "master" ]; then
+#     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+#     docker push patmcall/sarit-existdb;
+#     fi
