@@ -7,9 +7,12 @@ services:
 before_install:
   - docker pull patmcall/sarit-existdb:latest
   - docker run -d -p 127.0.0.1:8080:8080 --name sarit-existdb patmcall/sarit-existdb:latest
+  - docker ps -a
+  - until curl "http://127.0.0.1:8080/exist/apps/sarit-pm/works/"; do echo "Wait for it ..."; sleep 2; done
+  - docker ps -a
 
 script:
-  - curl "http://127.0.0.1:8080/exist/apps/sarit-pm/works/" | grep -E -i 'currently contains [1-9][0-9]+'
+  - curl "http://127.0.0.1:8080/exist/apps/sarit-pm/works/" | grep -E 'currently contains [1-9][0-9]+'
   - curl "http://127.0.0.1:8080/exist/apps/sarit-pm/works/search.html?query=*pratyak%E1%B9%A3*&field=text&tei-target=tei-text&work-authors=all&target-texts=avayavinir%C4%81kara%E1%B9%87a" | grep -E '<span id="hit-count">[1-9]+</span>'
 
 
