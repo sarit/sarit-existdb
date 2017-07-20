@@ -18,7 +18,7 @@ script:
   # test search: iast in devnag text
   - curl "http://127.0.0.1:8080/exist/apps/sarit-pm/works/search.html?query=*pratyak%E1%B9%A3*&field=text&tei-target=tei-text&work-authors=all&target-texts=avayavinir%C4%81kara%E1%B9%87a" | grep -E '<span id="hit-count">[1-9]+</span>'
   # can we get an epub?
-  - [ "$(curl -s 'http://127.0.0.1:8080/exist/apps/sarit-pm/works/asvaghosa-buddhacarita.epub?token=humptydumpty-super-secret-token&cache=no' | file -b -)" == "EPUB document" ]
+  - if [ "$(curl -s 'http://127.0.0.1:8080/exist/apps/sarit-pm/works/asvaghosa-buddhacarita.epub?token=humptydumpty-super-secret-token&cache=no' | file -b -)" == "EPUB document" ]; then true; else false; fi
 
 
 # after_success:
