@@ -3,13 +3,20 @@
 This repository collects the various modules needed to run
 http://sarit.indology.info.
 
-It is not yet possible to do a completely automated install, but this
-guide should make it as painless as currently possible (at least for a
-typical Debian testing system; see [[file:docker-sarit-app/README.org]]
-for a click and go solution).
+If you just want to run the application on your computer, you can use
+docker:
 
-You can compile and run a local version like this (your ~JAVA_HOME~
-might be different, though):
+#+BEGIN_SRC bash
+docker run patmcall/sarit-existdb:latest
+#+END_SRC
+
+See [[file:README_docker.org]] more details.
+
+
+* Development
+
+You should be able to compile and run a local version like this (your
+~JAVA_HOME~ might be different, though):
 
 #+BEGIN_SRC sh
 git clone --recursive https://github.com/sarit/sarit-existdb.git
@@ -19,6 +26,8 @@ cd ./exist/
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre java -jar start.jar jetty
 #+END_SRC
 
+
+This will pull in various [[file:.gitmodules][modules]]:
 
 1) https://github.com/sarit/exist: eXist-db with a patch to enable
    case-sensitive searching
@@ -36,8 +45,10 @@ JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre java -jar start.jar jetty
 8) https://github.com/sarit/sarit-pm: the user interface of the webapp
 
 
+If you change any of the sources locally, you can just run the steps
+after ~./bin/build.sh~.
 
-* Manual installation (for testing new features)
+* Main steps for manual installation
 
 ** System-wide requirements
 
