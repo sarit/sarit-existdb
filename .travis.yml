@@ -6,11 +6,14 @@ services:
 
 before_install:
   # - docker pull patmcall/sarit-existdb:latest
-  - docker build -f Dockerfile -t sarit-webapp .
-  - docker run -d -p 127.0.0.1:8080:8080 --name sarit-existdb patmcall/sarit-existdb:latest
-  - docker ps -a
+  # - docker build -f Dockerfile -t sarit-webapp-travis .
+  # - docker run -d -p 127.0.0.1:8080:8080 --name sarit-webapp sarit-webapp-travis
+  # - docker ps -a
+  - ./bin/build.sh
+  - java -jar exist/start.jar jetty &
+  - sleep 10
   - until curl -s -o /dev/null "http://127.0.0.1:8080/exist/apps/sarit-pm/works/"; do echo "Wait for it ..."; sleep 2; done
-  - docker ps -a
+  
 
 script:
   # more than one text?
