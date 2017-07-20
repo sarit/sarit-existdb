@@ -22,9 +22,9 @@ before_install:
   - ls -lh
   - npm install -g npm@latest
   - npm install -g grunt-cli
-  - ./.build_travis.sh
 
 script:
+  - ./bin/build.sh
   - docker build -f Dockerfile -t sarit-webapp .
 
 
