@@ -42,32 +42,11 @@ the username is the default, "admin", and the password is empty.
    various submodules) (currently this is not working, just use the
    build script in the meantime).
 
-** Without the current data
-
- If you want to put your own data into a local version of SARIT’s
- webapp or change something in the application, you can build a local
- docker image:
+To build a version, run:
 
  #+BEGIN_SRC sh
- docker build -f docker-sarit-app/Dockerfile -t sarit-webapp . > /tmp/docker-build.log 2>&1
+ docker build -f Dockerfile -t sarit-webapp-with-data . > /tmp/docker-build.log 2>&1
  #+END_SRC
-
- from this repository’s root directory (file:./).  This will build the
- webapp alone, without SARIT’s library. 
-
-
-** With the current data
-<<docker-build-with-data>>
-
-To build a version with the data, run
-
- #+BEGIN_SRC sh
- docker build -f docker-sarit-data/Dockerfile -t sarit-webapp-with-data . > /tmp/docker-build.log 2>&1
- #+END_SRC
-
-Note that this builds on the previous image, so if you have updated
-both the application and the data you will need to rebuild *both*
-images.
 
 ** Run the images
 
