@@ -127,7 +127,7 @@ regressions."
 		     (contents-url text-url))
 		 (setf (url-filename contents-url) (concat (car (url-path-and-query contents-url))
 							   query))
-		 (debug-message "Retrieving contens of %s at %s" x (url-recreate-url contents-url))
+		 (debug-message "Retrieving contents of %s at %s" x (url-recreate-url contents-url))
 		 (with-current-buffer (url-retrieve-synchronously contents-url (not show-debug?))
 		   (should
 		    (equal
