@@ -15,6 +15,30 @@
 (require 'rx)
 (eval-when-compile (require 'cl-lib))
 
+(defvar show-debug? nil)
+(setq show-debug?
+      (or (member "--verbose" (member "--" command-line-args))
+	  (member "-v" (member "--" command-line-args))
+	  nil))
+
+
+(defun debug-message (format-string &rest args)
+  ;; (message "debug args: %s" (list format-string args))
+  (when show-debug?
+    ;; (message (apply 'format format-string args))
+    (message
+     (format
+      "test-debug %s: %s"
+      (format-time-string "%FT%T%z" (current-time))
+      (if args
+	  (apply 'format format-string args)
+	format-string)))))
+
+(when show-debug?
+  (debug-message "Showing debug messages")
+  (debug-message "command-line-args: %s" command-line-args))
+
+
 (ert-deftest test-fetching-urls ()
   "Test search function for specific things.
 
@@ -23,18 +47,19 @@ regressions."
   (let ((cases
 	 '(
 	   "http://localhost:8080/exist/apps/sarit-pm/works/search.html?query=tatra&field=text&tei-target=tei-text&work-authors=all"
-	   "http://localhost:8080/exist/apps/sarit-pm/works/search.html?query=tatra+AND+atra+AND+%E0%A4%A8%E0%A4%B0%E0%A4%AF%E0%A4%BE%E0%A4%97%E0%A4%B6%E0%A5%8D%E0%A4%9A%E0%A4%A4%E0%A5%8D&field=text&tei-target=tei-text&work-authors=all"
+	   "http://localhost:8080/exist/apps/sarit-pm/works/search.html?query=tatra+AND+atra+AND+नरयागश्चत्&field=text&tei-target=tei-text&work-authors=all"
 	   "http://localhost:8080/exist/apps/sarit-pm/works/search.html?query=tatra+AND+atra&field=text&tei-target=tei-text&work-authors=all"
 	   )))
     (let ((url-cache-expire-time 1))
       (url-cache-prune-cache))
     (mapc
      (lambda (c)
-       (with-current-buffer (url-retrieve-synchronously c)
+       (with-current-buffer (url-retrieve-synchronously c (not show-debug?))
 	 (pop-to-buffer (current-buffer))
-	 (message "url-http-response-status for %s is: %s"
-		  (url-recreate-url url-http-target-url)
-		  url-http-response-status)
+	 (debug-message
+	  "url-http-response-status for %s: %s"
+	  (url-unhex-string (url-recreate-url url-http-target-url))
+	  url-http-response-status)
 	 (should
 	  (equal
 	   url-http-response-status
@@ -42,16 +67,16 @@ regressions."
 	 (goto-char (point-min))
 	 (re-search-forward "id=\"hit-count\">\\([0-9]+\\)</span>" nil 'noerr)
 	 (let ((result-count (string-to-number (match-string 1))))
-	   (message "Results: %s" result-count)
+	   (debug-message "Results: %s" result-count)
 	   (should
 	    (equal
 	     t
 	     (< 0 result-count)))
 	   (when (< 30 result-count)
-	     (with-current-buffer (url-retrieve-synchronously (format "%s%s" c "&start=21"))
-	       (message "url-http-response-status for %s is: %s"
-			(url-recreate-url url-http-target-url)
-			url-http-response-status)
+	     (with-current-buffer (url-retrieve-synchronously (format "%s%s" c "&start=21") (not show-debug?))
+	       (debug-message (format "url-http-response-status for %s is: %s"
+				      (url-recreate-url url-http-target-url)
+				      url-http-response-status))
 	       (should
 		(equal
 		 url-http-response-status
@@ -64,10 +89,11 @@ regressions."
   "See if the individual XML files can be browsed/displayed."
   (let ((base-url (url-generic-parse-url "http://localhost:8080"))
 	(texts (with-temp-buffer
-		 (insert-file (expand-file-name "../SARIT-corpus/saritcorpus.xml"
-						(if load-file-name
-						    (file-name-directory load-file-name)
-						  default-directory)))
+		 (insert-file-contents
+		  (expand-file-name "../SARIT-corpus/saritcorpus.xml"
+				    (if load-file-name
+					(file-name-directory load-file-name)
+				      default-directory)))
 		 (mapcar (lambda (entry)
 			   (when (equal (car entry) 'include)
 			     (cdr (caar (cdr entry)))))
@@ -78,8 +104,8 @@ regressions."
        (let ((text-url (url-generic-parse-url
 			(concat (url-recreate-url base-url)
 				(format "/exist/apps/sarit-pm/works/%s?view=div" x)))))
-	 (message "Retrieving %s at %s" x (url-recreate-url text-url))
-	 (with-current-buffer (url-retrieve-synchronously text-url)
+	 (debug-message "Retrieving %s at %s" x (url-recreate-url text-url))
+	 (with-current-buffer (url-retrieve-synchronously text-url (not show-debug?))
 	   (should
 	    (equal
 	     url-http-response-status
@@ -101,25 +127,38 @@ regressions."
 		     (contents-url text-url))
 		 (setf (url-filename contents-url) (concat (car (url-path-and-query contents-url))
 							   query))
-		 (message "Retrieving contens of %s at %s" x (url-recreate-url contents-url))
-		 (with-current-buffer (url-retrieve-synchronously contents-url)
+		 (debug-message "Retrieving contens of %s at %s" x (url-recreate-url contents-url))
+		 (with-current-buffer (url-retrieve-synchronously contents-url (not show-debug?))
 		   (should
 		    (equal
 		     url-http-response-status
 		     200)))))))))
      texts)
-;;; currently not working for all texts (needs <pb/> elements?)
-    ;; (mapc
-    ;;  (lambda (x)
-    ;;    (setf (url-filename base-url) (format "/exist/apps/sarit-pm/works/%s?view=page" x))
-    ;;    (message "Retrieving %s at %s" x (url-recreate-url base-url))
-    ;;    (with-current-buffer (url-retrieve-synchronously base-url)
-    ;; 	 (should
-    ;; 	  (equal
-    ;; 	   url-http-response-status
-    ;; 	   200))))
-    ;;  texts)
-    ))
+    ;; currently not working for all texts (needs <pb/> elements?)
+    (mapc
+     (lambda (x)
+       (when
+	   ;; cheap lookup to see if we have at least 5 "<pb/>" elements
+	   (with-temp-buffer
+	     (insert-file-contents-literally
+	      (expand-file-name
+	       x
+	       (file-name-as-directory
+		(expand-file-name
+		 "../SARIT-corpus"
+		 (if load-file-name
+		     (file-name-directory load-file-name)
+		   default-directory))))
+	      nil)
+	     (re-search-forward "<pb\\b" nil 'no-error 5))
+	 (setf (url-filename base-url) (format "/exist/apps/sarit-pm/works/%s?view=page" x))
+	 (debug-message "Retrieving page wise view for %s at %s" x (url-recreate-url base-url))
+	 (with-current-buffer (url-retrieve-synchronously base-url (not show-debug?))
+	   (should
+	    (equal
+	     url-http-response-status
+	     200)))))
+     texts)))
 
 
 
