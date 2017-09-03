@@ -34,6 +34,27 @@
 	  (apply 'format format-string args)
 	format-string)))))
 
+(defun sarit-tests-get-docs-in-corpus (&optional full-path?)
+  (let ((default-directory (if load-file-name
+			       (file-name-directory load-file-name)
+			     default-directory)))
+    (with-temp-buffer
+      (insert-file-contents
+       (expand-file-name "../SARIT-corpus/saritcorpus.xml"))
+      (mapcar (lambda (entry)
+		(when (equal (car entry) 'include)
+		  (if full-path?
+		      (expand-file-name (cdr (caar (cdr entry))))
+		    (cdr (caar (cdr entry))))))
+	      (cdr (cdr (cdr (libxml-parse-xml-region (point-min) (point-max)))))))))
+
+;; (sarit-tests-get-docs-in-corpus)
+
+;; (sarit-tests-get-docs-in-corpus t)
+
+
+
+
 (when show-debug?
   (debug-message "Showing debug messages")
   (debug-message "command-line-args: %s" command-line-args))
@@ -88,16 +109,7 @@ regressions."
 (ert-deftest test-check-access-to-texts ()
   "See if the individual XML files can be browsed/displayed."
   (let ((base-url (url-generic-parse-url "http://localhost:8080"))
-	(texts (with-temp-buffer
-		 (insert-file-contents
-		  (expand-file-name "../SARIT-corpus/saritcorpus.xml"
-				    (if load-file-name
-					(file-name-directory load-file-name)
-				      default-directory)))
-		 (mapcar (lambda (entry)
-			   (when (equal (car entry) 'include)
-			     (cdr (caar (cdr entry)))))
-			 (cdr (cdr (cdr (libxml-parse-xml-region (point-min) (point-max)))))))))
+	(texts (sarit-tests-get-docs-in-corpus)))
     (should (equal t (< 0 (length texts))))
     (mapc
      (lambda (x)
@@ -106,12 +118,7 @@ regressions."
 				(format "/exist/apps/sarit-pm/works/%s?view=div" x)))))
 	 (debug-message "Retrieving %s at %s" x (url-recreate-url text-url))
 	 (with-current-buffer (url-retrieve-synchronously text-url (not show-debug?))
-	   (should
-	    (equal
-	     url-http-response-status
-	     200))
 	   ;; search links to contents: href="siddhiviniscayatika.xml?root=1.4.5.21&amp;view=div"
-	   (goto-char (point-min))
 	   (let
 	       ((links
 		 (while (re-search-forward (rx-to-string `(and "href=\""
@@ -160,15 +167,37 @@ regressions."
 	     200)))))
      texts)))
 
-
-
-
 ;; (url-generic-parse-url "http://localhost:8080/exist/apps/sarit-pm/works/siddhiviniscayatika.xml?view=div")
 
 ;; (ert "test-check-access-to-texts")
+
+(ert-deftest test-display-principals ()
+  :expected-result :failed 
+  (mapcar
+   (lambda (x)
+     (let ((text-url (url-generic-parse-url
+		      (concat (url-recreate-url base-url)
+			      (format "/exist/apps/sarit-pm/works/%s?view=div" x)))))
+       (with-current-buffer (url-retrieve-synchronously text-url (not show-debug?))
+	 (should
+	  (equal
+	   url-http-response-status
+	   200))
+	 (goto-char (point-min))
+	 ;; ascertain principals, but avoid bad formatting
+	 (save-excursion
+	   (when (re-search-forward "<li\\s-+title=\"tei:principal\">" nil 'no-error)
+	     (debug-message "Checking display of principals for %s" x)
+	     (should
+	      (equal
+	       (re-search-forward "\\s-+,"
+				  (save-excursion (re-search-forward "</li>") (point))
+				  'no-error)
+	       nil)))))))
+   (sarit-tests-get-docs-in-corpus)))
+
 
 
 (ert-run-tests-batch-and-exit)
 
 
-;; FAQ: Why test in emacs-lisp? --> Please show me how to do this in Xquery.
