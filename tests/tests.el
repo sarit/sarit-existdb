@@ -21,6 +21,22 @@
 	  (member "-v" (member "--" command-line-args))
 	  nil))
 
+(defvar exist-apps-base-url
+  (url-generic-parse-url "http://localhost:8088/")
+  "The base url (including path) to exist-db applications.
+
+Typical values will be: http://127.0.1.1:8088/, for exist started
+with bin/server.sh, or http://127.0.1.1:8088/exist/apps/ for
+exist started with bin/startup.sh.")
+
+(setq exist-apps-base-url
+      (let ((url-arg (or (member "--base-url" (member "--" command-line-args))
+			 (member "-b" (member "--" command-line-args)))))
+	(url-generic-parse-url
+	 (if url-arg
+	     (cadr url-arg)
+	   "http://localhost:8088/"))))
+
 
 (defun debug-message (format-string &rest args)
   ;; (message "debug args: %s" (list format-string args))
@@ -66,11 +82,13 @@
 These urls had problems at one time or another, avoid
 regressions."
   (let ((cases
-	 '(
-	   "http://localhost:8080/exist/apps/sarit-pm/works/search.html?query=tatra&field=text&tei-target=tei-text&work-authors=all"
-	   "http://localhost:8080/exist/apps/sarit-pm/works/search.html?query=tatra+AND+atra+AND+नरयागश्चत्&field=text&tei-target=tei-text&work-authors=all"
-	   "http://localhost:8080/exist/apps/sarit-pm/works/search.html?query=tatra+AND+atra&field=text&tei-target=tei-text&work-authors=all"
-	   )))
+	 `(
+	   ,(concat (url-recreate-url exist-apps-base-url)
+		   "sarit-pm/works/search.html?query=tatra&field=text&tei-target=tei-text&work-authors=all")
+	   ,(concat (url-recreate-url exist-apps-base-url)
+		   "sarit-pm/works/search.html?query=tatra+AND+atra+AND+नरयागश्चत्&field=text&tei-target=tei-text&work-authors=all")
+	   ,(concat (url-recreate-url exist-apps-base-url)
+		    "sarit-pm/works/search.html?query=tatra+AND+atra&field=text&tei-target=tei-text&work-authors=all"))))
     (let ((url-cache-expire-time 1))
       (url-cache-prune-cache))
     (mapc
@@ -108,14 +126,14 @@ regressions."
 
 (ert-deftest test-check-access-to-texts ()
   "See if the individual XML files can be browsed/displayed."
-  (let ((base-url (url-generic-parse-url "http://localhost:8080"))
+  (let ((base-url exist-apps-base-url)
 	(texts (sarit-tests-get-docs-in-corpus)))
     (should (equal t (< 0 (length texts))))
     (mapc
      (lambda (x)
        (let ((text-url (url-generic-parse-url
 			(concat (url-recreate-url base-url)
-				(format "/exist/apps/sarit-pm/works/%s?view=div" x)))))
+				(format "sarit-pm/works/%s?view=div" x)))))
 	 (debug-message "Retrieving %s at %s" x (url-recreate-url text-url))
 	 (with-current-buffer (url-retrieve-synchronously text-url (not show-debug?))
 	   ;; search links to contents: href="siddhiviniscayatika.xml?root=1.4.5.21&amp;view=div"
@@ -132,8 +150,9 @@ regressions."
 	     (when (< 0 (length links))
 	       (let ((query (elt (random (length links)) links))
 		     (contents-url text-url))
-		 (setf (url-filename contents-url) (concat (car (url-path-and-query contents-url))
-							   query))
+		 (setf (url-filename contents-url)
+		       (concat (car (url-path-and-query contents-url))
+			       query))
 		 (debug-message "Retrieving contents of %s at %s" x (url-recreate-url contents-url))
 		 (with-current-buffer (url-retrieve-synchronously contents-url (not show-debug?))
 		   (should
@@ -158,16 +177,18 @@ regressions."
 		   default-directory))))
 	      nil)
 	     (re-search-forward "<pb\\b" nil 'no-error 5))
-	 (setf (url-filename base-url) (format "/exist/apps/sarit-pm/works/%s?view=page" x))
-	 (debug-message "Retrieving page wise view for %s at %s" x (url-recreate-url base-url))
-	 (with-current-buffer (url-retrieve-synchronously base-url (not show-debug?))
-	   (should
-	    (equal
-	     url-http-response-status
-	     200)))))
+	 (let ((page-url (url-generic-parse-url
+			  (concat (url-recreate-url base-url)
+				  (format "sarit-pm/works/%s?view=page" x)) ) ))
+	   (debug-message "Retrieving page wise view for %s at %s" x (url-recreate-url page-url))
+	   (with-current-buffer (url-retrieve-synchronously page-url (not show-debug?))
+	     (should
+	      (equal
+	       url-http-response-status
+	       200))))))
      texts)))
 
-;; (url-generic-parse-url "http://localhost:8080/exist/apps/sarit-pm/works/siddhiviniscayatika.xml?view=div")
+;; (url-generic-parse-url "http://localhost:8088/sarit-pm/works/siddhiviniscayatika.xml?view=div")
 
 ;; (ert "test-check-access-to-texts")
 
@@ -177,7 +198,7 @@ regressions."
    (lambda (x)
      (let ((text-url (url-generic-parse-url
 		      (concat (url-recreate-url base-url)
-			      (format "/exist/apps/sarit-pm/works/%s?view=div" x)))))
+			      (format "sarit-pm/works/%s?view=div" x)))))
        (with-current-buffer (url-retrieve-synchronously text-url (not show-debug?))
 	 (should
 	  (equal

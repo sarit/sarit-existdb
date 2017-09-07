@@ -68,4 +68,4 @@ COPY --from=0 $BUILD_APP_HOME/exist ./
 # RUN echo "DEBUG" && pwd && ls -lha
 # RUN ls -lh "./bin/startup.sh"
 # install main command to run for this image
-CMD ["/opt/lib/sarit-existdb/exist/bin/startup.sh"]
+CMD ["/opt/lib/sarit-existdb/exist/bin/server.sh"]
