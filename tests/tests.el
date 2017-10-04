@@ -1,5 +1,5 @@
-#! /bin/sh
-":"; exec emacs --no-site-file --script "$0" -- "$@" # -*-emacs-lisp-*-
+#!/usr/bin/env sh
+":"; exec emacs -Q --script "$0" -- "run-tests" "$@" # -*-emacs-lisp-*-
 
 ;; some high-level tests of the sarit-exist-webapp
 
@@ -8,7 +8,6 @@
 ;; or 
 
 ;; run from command line as `emacs --no-init-file --no-site-file -batch -l tests.el -f ert-run-tests-batch-and-exit'
-
 
 (require 'ert)
 (require 'url)
@@ -36,7 +35,6 @@ exist started with bin/startup.sh.")
 	 (if url-arg
 	     (cadr url-arg)
 	   "http://localhost:8088/"))))
-
 
 (defun debug-message (format-string &rest args)
   ;; (message "debug args: %s" (list format-string args))
@@ -68,13 +66,9 @@ exist started with bin/startup.sh.")
 
 ;; (sarit-tests-get-docs-in-corpus t)
 
-
-
-
 (when show-debug?
   (debug-message "Showing debug messages")
   (debug-message "command-line-args: %s" command-line-args))
-
 
 (ert-deftest test-fetching-urls ()
   "Test search function for specific things.
@@ -94,7 +88,7 @@ regressions."
     (mapc
      (lambda (c)
        (with-current-buffer (url-retrieve-synchronously c (not show-debug?))
-	 (pop-to-buffer (current-buffer))
+	 ;; (pop-to-buffer (current-buffer))
 	 (debug-message
 	  "url-http-response-status for %s: %s"
 	  (url-unhex-string (url-recreate-url url-http-target-url))
@@ -180,7 +174,7 @@ regressions."
 	 (let ((page-url (url-generic-parse-url
 			  (concat (url-recreate-url base-url)
 				  (format "sarit-pm/works/%s?view=page" x)) ) ))
-	   (debug-message "Retrieving page wise view for %s at %s" x (url-recreate-url page-url))
+	   (debug-message "Retrieving pagewise view for %s at %s" x (url-recreate-url page-url))
 	   (with-current-buffer (url-retrieve-synchronously page-url (not show-debug?))
 	     (should
 	      (equal
@@ -217,8 +211,87 @@ regressions."
 	       nil)))))))
    (sarit-tests-get-docs-in-corpus)))
 
+(ert-deftest test-search-display-kwic-or-context ()
+  "Check if the display parameter is working."
+  (let ((cases
+	 `(
+	   ,(concat (url-recreate-url exist-apps-base-url)
+		    "sarit-pm/works/search.html?query=*citra*&field=text&tei-target=tei-text&work-authors=all&display=%s"))))
+    (let ((url-cache-expire-time 1))
+      (url-cache-prune-cache))
+    (mapc
+     (lambda (c)
+       ;; check kwic
+       (with-current-buffer (url-retrieve-synchronously (format c "kwic") (not show-debug?))
+	 (pop-to-buffer (current-buffer))
+	 (debug-message
+	  "url-http-response-status for %s: %s"
+	  (url-unhex-string (url-recreate-url url-http-target-url))
+	  url-http-response-status)
+	 (should
+	  (equal
+	   url-http-response-status
+	   200))
+	 (goto-char (point-min))
+	 ;; check we have at least one result
+	 (save-excursion
+	   (should
+	    (re-search-forward "div\\s-+class=\"document\"" nil)))
+	 (while (re-search-forward "div\\s-+class=\"document\"" nil 'noerr)
+	   (let ((end (save-excursion (save-match-data (re-search-forward "</div>")))))
+	     (save-excursion
+	       ;; search for mark item or a button that’s hiding stuff
+	       (should (re-search-forward "<mark>\\|<button[^>]+title=\"Note\"" end 'noerr))))))
+       ;; check structural
+       (with-current-buffer (url-retrieve-synchronously (format c "structural") (not show-debug?))
+	 (pop-to-buffer (current-buffer))
+	 (debug-message
+	  "url-http-response-status for %s: %s"
+	  (url-unhex-string (url-recreate-url url-http-target-url))
+	  url-http-response-status)
+	 (should
+	  (equal
+	   url-http-response-status
+	   200))
+	 (goto-char (point-min))
+	 ;; check we have at least one result
+	 (save-excursion
+	   (should
+	    (re-search-forward "div\\s-+class=\"document\"" nil)))
+	 (while (re-search-forward "div\\s-+class=\"document\"" nil 'noerr)
+	   (let ((end (or
+		       (save-excursion
+			 (save-match-data
+			   (when (re-search-forward "div\\s-+class=\"document\"" nil 'noerr)
+			     (- (point) 2))))
+		       (point-max))))
+	     (save-excursion
+	       (should (re-search-forward "<mark>" end 'noerr)))
+	     (save-excursion
+	       (should (re-search-forward "class=\"search-tag\"" end 'noerr)))))))
+     cases)))
 
+;; (ert "test-search-display-kwic-or-context")
 
-(ert-run-tests-batch-and-exit)
+(when noninteractive
+  (cond
+   ((or (member "-h" command-line-args)
+	(member "--help" command-line-args))
+    (message
+     "
+Run high-level tests against SARIT’s eXistdb app.  
+
+Options:
+
+-h, --help             Show help
+-b, --base-url         URL where sarit-pm is running (default: %s)
+-v, --verbose          Say what’s going on
+
+"
+     (url-recreate-url exist-apps-base-url)))
+   ((member "run-tests" command-line-args)
+    (message "Running tests against %s"
+	     (url-recreate-url exist-apps-base-url))
+    (ert-run-tests-batch-and-exit))))
 
 
