@@ -5,7 +5,7 @@
 
 # for Debian, use JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre as env
 
-if [ -d ./exist/ ] && [ -d ./sarit-pm/ ] && [ -d ./sarit-data/ ]
+if [ -d ./exist/ ] && [ -d ./sarit-pm/ ]
 then
     STARTDIR=$(pwd)
 else
@@ -45,27 +45,24 @@ mvn --batch-mode --quiet clean package
 cp ./target/sarit-transliteration-exist-module-0.0.8.xar ../exist/autodeploy/
 cd "$STARTDIR"
 
-## better just keep sarit-data up to date
-# echo "Updating sarit-data collection  ..."
-# cd ./sarit-data/data/ ||  exit 1
-# for xml in $(xmlstarlet sel -N xi='http://www.w3.org/2001/XInclude' -T -t -m "//xi:include[@href]" -v "concat(\"$STARTDIR/SARIT-corpus/\", ./@href)" -n   "$STARTDIR"/SARIT-corpus/saritcorpus.xml)
-# do
-#     echo "Updating $xml ..."
-#     cp "$xml" ./
-# done
-# cd "$STARTDIR"
-
-echo "Building sarit-data ..."
-cd ./sarit-data/ ||  exit 1
- ../exist/build.sh
-## don’t autodeploy yet --> depends on sarit-pm having been installed for index ?
-# cp ./build/sarit-data-0.1.xar ../exist/autodeploy/sarit-data-0.1.xar
+echo "Starting existdb locally to build sarit-pm ..."
+cd ./exist/ ||  exit 1
+ java -jar start.jar jetty &
+EXPROC=$!
+echo "Waiting for existdb to load completely ($EXPROC) ..."
+sleep 5
+grep -m 1 "Server has started, listening on" <(tail -f "$STARTDIR"/exist/webapp/WEB-INF/logs/exist.log)
 cd "$STARTDIR"
 
 echo "Building sarit-pm ..."
 cd ./sarit-pm/ ||  exit 1
- ../exist/build.sh
+ ../exist/build.sh xar-all-inclusive
 cp ./build/sarit-pm-0.2.xar ../exist/autodeploy/sarit-pm-0.2.xar
+cd "$STARTDIR"
+
+cd ./exist/ || exit 1
+echo "Shutting down existdb ($EXPROC) ..."
+./bin/shutdown.sh
 cd "$STARTDIR"
 
 echo "Starting existdb to trigger autodeploy (#1) ..."
@@ -78,22 +75,6 @@ grep -m 1 "Server has started, listening on" <(tail -f "$STARTDIR"/exist/webapp/
 echo "Shutting down existdb ($EXPROC) ..."
  ./bin/shutdown.sh
 cd "$STARTDIR"
-
-echo "Deploying sarit-data ..."
-cd ./sarit-data/ ||  exit 1
-# autodeploy
-cp ./build/sarit-data-0.1.xar ../exist/autodeploy/sarit-data-0.1.xar
-cd "$STARTDIR"
-
-echo "Starting existdb to trigger autodeploy of sarit-data, be patient #2 ..."
-cd ./exist/
- java -jar start.jar jetty &
-EXPROC=$!
-echo "Waiting for completion of existdb ..."
-sleep 5
-grep -m 1 "Server has started, listening on" <(tail -f "$STARTDIR"/exist/webapp/WEB-INF/logs/exist.log)
-echo "Shutting down existdb ($EXPROC) ..."
- ./bin/shutdown.sh
 
 echo "Done, run ' $STARTDIR/exist/bin/startup.sh' to start the server."
 
