@@ -14,6 +14,7 @@
 (require 'rx)
 (eval-when-compile (require 'cl-lib))
 
+
 (defvar show-debug? nil)
 (setq show-debug?
       (or (member "--verbose" (member "--" command-line-args))
@@ -69,6 +70,66 @@ exist started with bin/startup.sh.")
 (when show-debug?
   (debug-message "Showing debug messages")
   (debug-message "command-line-args: %s" command-line-args))
+
+;;; url retrieval functions give us the following buffer local
+;;; variables:
+
+;; '((buffer-display-time 23029 54969 23547 478000)
+;;  (buffer-display-count . 2)
+;;  (buffer-invisibility-spec . t)
+;;  (buffer-file-truename)
+;;  (point-before-scroll)
+;;  (buffer-auto-save-file-format . t)
+;;  (buffer-file-format)
+;;  (enable-multibyte-characters)
+;;  (mark-active)
+;;  (mode-line-format ""
+;; 		   (eldoc-mode-line-string
+;; 		    (" " eldoc-mode-line-string " "))
+;; 		   "%b [%s]")
+;;  (mode-name . "Fundamental")
+;;  (major-mode . fundamental-mode)
+;;  (buffer-read-only)
+;;  (buffer-auto-save-file-name)
+;;  (buffer-saved-size . 0)
+;;  (buffer-backed-up)
+;;  (default-directory . "/home/beta/webstuff/eXist-stuff/sarit-existdb/tests/")
+;;  (buffer-file-name)
+;;  (url-current-object .
+;; 		     [cl-struct-url "http" nil nil "127.0.0.1" 8080 "/exist/apps/sarit-pm/works/carakasamhita.tex?token=a452857b-8938-495b-ad92-afa9783dd84e&cache=no&source=yes" nil nil t nil t])
+;;  (url-http-end-of-headers . #<marker at 389 in  *http 127.0.0.1:8080*>)
+;;  (url-http-content-type . "media-type=application/pdf")
+;;  (url-http-content-length)
+;;  (url-http-transfer-encoding . "chunked")
+;;  (url-http-after-change-function . url-http-chunked-encoding-after-change-function)
+;;  (url-http-response-version . "1.1")
+;;  (url-http-response-status . 200)
+;;  (url-http-chunked-length . 0)
+;;  (url-http-chunked-counter . 80)
+;;  (url-http-chunked-start . #<marker at 390 in  *http 127.0.0.1:8080*>)
+;;  (url-callback-function .
+;; 			#[128 "\302\303\304p#\210\300\305\240\210\301p\240\207"
+;; 			      [(t)
+;; 			       (#<buffer  *http 127.0.0.1:8080*>)
+;; 			       url-debug retrieval "Synchronous fetching done (%S)" t]
+;; 			      5 "\n\n(fn &rest IGNORED)"])
+;;  (url-callback-arguments nil)
+;;  (url-show-status)
+;;  (url-http-process . #<process 127.0.0.1>)
+;;  (url-http-method . "GET")
+;;  (url-http-extra-headers)
+;;  (url-http-noninteractive)
+;;  (url-http-data)
+;;  (url-http-target-url .
+;; 		      [cl-struct-url "http" nil nil "127.0.0.1" 8080 "/exist/apps/sarit-pm/works/carakasamhita.tex?token=a452857b-8938-495b-ad92-afa9783dd84e&cache=no&source=yes" nil nil t nil t])
+;;  (url-http-no-retry)
+;;  (url-http-connection-opened . t)
+;;  (url-mime-accept-string)
+;;  (url-http-proxy)
+;;  (deactivate-mark)
+;;  (minor-mode-overriding-map-alist))
+
+
 
 (ert-deftest test-fetching-urls ()
   "Test search function for specific things.
@@ -187,7 +248,7 @@ regressions."
 ;; (ert "test-check-access-to-texts")
 
 (ert-deftest test-display-principals ()
-  :expected-result :failed 
+  :expected-result :failed
   (mapcar
    (lambda (x)
      (let ((text-url (url-generic-parse-url
@@ -272,6 +333,67 @@ regressions."
      cases)))
 
 ;; (ert "test-search-display-kwic-or-context")
+
+(ert-deftest test-fetch-tex ()
+  "Check if TeX generation is working."
+  :expected-result :failed
+  (let ((doc-urls (mapcar
+		   (lambda (doc)
+		     (format
+		      "%ssarit-pm/works/%s?source=yes"
+		      (url-recreate-url exist-apps-base-url)
+		      (concat (file-name-sans-extension doc) ".tex")))
+		   (sarit-tests-get-docs-in-corpus))))
+    (dolist (doc-url doc-urls)
+      (debug-message  "Retrieving TeX source %s" doc-url)
+      (with-current-buffer (url-retrieve-synchronously doc-url)
+	(should
+	 (equal
+	  url-http-response-status
+	  200))
+	(should
+	 (string-match "application/tex" url-http-content-type))))))
+
+;; (ert "test-fetch-tex")
+
+(ert-deftest test-fetch-pdf ()
+  "Check if PDF download is working."
+  (let ((doc-urls (mapcar
+		   (lambda (doc)
+		     (format
+		      "%ssarit-pm/works/%s"
+		      (url-recreate-url exist-apps-base-url)
+		      (concat (file-name-sans-extension doc) ".tex")))
+		   (sarit-tests-get-docs-in-corpus))))
+    (dolist (doc-url doc-urls)
+      (debug-message  "Retrieving TeX -> PDF for %s" doc-url)
+      (with-current-buffer (url-retrieve-synchronously doc-url)
+	(should
+	 (equal
+	  url-http-response-status
+	  200))
+	(should
+	 (string-match "application/pdf" url-http-content-type))))))
+
+(ert-deftest test-fetch-epub ()
+  "Check if epub generation is working."
+  (let ((doc-urls (mapcar
+		   (lambda (doc)
+		     (format
+		      "%ssarit-pm/works/%s"
+		      (url-recreate-url exist-apps-base-url)
+		      (concat (file-name-sans-extension doc) ".epub")))
+		   (sarit-tests-get-docs-in-corpus))))
+    (dolist (doc-url doc-urls)
+      (debug-message  "Retrieving TeX source %s" doc-url)
+      (with-current-buffer (url-retrieve-synchronously doc-url)
+	(should
+	 (equal
+	  url-http-response-status
+	  200))))))
+
+;; (let ((exist-apps-base-url (url-generic-parse-url "http://127.0.1.1:8080/exist/apps/")))
+;;   (ert "test-fetch-tex"))
 
 (when noninteractive
   (cond
