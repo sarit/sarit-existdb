@@ -5,6 +5,12 @@
 
 # for Debian, use JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre as env
 
+if [ ! -d "${JAVA_HOME:?Need to set JAVA_HOME}" ]
+then
+    echo "Invalid JAVA_HOME dir set."
+    exit 1
+fi
+
 if [ -d ./exist/ ] && [ -d ./sarit-pm/ ]
 then
     STARTDIR=$(pwd)
