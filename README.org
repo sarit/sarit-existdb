@@ -21,7 +21,7 @@ You should be able to compile and run a local version like this (your
 #+BEGIN_SRC sh
 git clone --recursive https://github.com/sarit/sarit-existdb.git
 cd ./sarit-existdb/
-./bin/build.sh
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/build.sh
 cd ./exist/
 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre java -jar start.jar jetty
 #+END_SRC

@@ -23,8 +23,8 @@ fi
 echo "Building things in $STARTDIR/exist ..."
 
 mkdir -p "$STARTDIR"/blobs/ && cd "$STARTDIR"/blobs/
-echo "Getting and installing transcode library from sanskritlibrary.org ..."
-[ ! -f transcodeFile.zip ] && wget --quiet http://sanskritlibrary.org/software/transcodeFile.zip
+echo "Installing transcode library from sanskritlibrary.org ..."
+[ ! -f transcodeFile.zip ] && "Downloading transcodeFile.zip" && wget --quiet http://sanskritlibrary.org/software/transcodeFile.zip
 unzip -q -u transcodeFile.zip
 mvn --batch-mode --quiet install:install-file -Dfile=./TranscodeFile/dist/lib/SanskritLibrary.jar -DgroupId=org.sanskritlibrary -DartifactId=sl -Dversion=0.1 -Dpackaging=jar
 cd "$STARTDIR"
@@ -41,8 +41,9 @@ then
     cp ./exist.local.build.properties ./exist/local.build.properties
 fi
 cd ./exist/ ||  exit 1
- ./build.sh clean
- ./build.sh
+./build.sh clean
+./build.sh clean-all
+./build.sh
 cd "$STARTDIR"
 
 echo "Building sarit-transliteration-exist-module ..."
@@ -63,7 +64,7 @@ cd "$STARTDIR"
 echo "Building sarit-pm ..."
 cd ./sarit-pm/ ||  exit 1
  ../exist/build.sh xar-all-inclusive
-cp ./build/sarit-pm-0.2.xar ../exist/autodeploy/sarit-pm-0.2.xar
+cp ./build/sarit-pm-0.3.xar ../exist/autodeploy/sarit-pm-0.3.xar
 cd "$STARTDIR"
 
 cd ./exist/ || exit 1
