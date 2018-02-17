@@ -34,30 +34,22 @@ the username is the default, "admin", and the password is empty.
 
 * Building the images
 
-1) file:./Dockerfile: this builds things from the upstream
-   (https://github.com/sarit) repositories.
-
-2) file:./Dockerfile_use_local: this recipe builds the application
-   from the locally available sources (usually the *.xar files in the
-   various submodules) (currently this is not working, just use the
-   build script in the meantime).
-
 To build a version, run:
 
- #+BEGIN_SRC sh
- docker build -f Dockerfile -t sarit-webapp-with-data . > /tmp/docker-build.log 2>&1
- #+END_SRC
+#+BEGIN_SRC sh
+docker build -f Dockerfile -t sarit-webapp-with-data . > /tmp/docker-build.log 2>&1
+#+END_SRC
 
 ** Run the images
 
  In case of success, run:
 
 #+BEGIN_SRC bash
-docker run --rm -p 127.0.0.1:8080:8080 --name sarit-webapp-with-data sarit-webapp-with-data:latest
+docker run --rm -p 127.0.0.1:8088:8088 --name sarit-webapp-with-data sarit-webapp-with-data:latest
 #+END_SRC
 
 which should allow you to see the SARIT app on
-http://localhost:8080/exist/apps/sarit-pm/works/.
+http://127.0.0.1:8088/sarit-pm/works/.
 
 
 * Docker cheat-sheet
