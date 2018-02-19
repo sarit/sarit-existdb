@@ -35,7 +35,7 @@ exist started with bin/startup.sh.")
 	(url-generic-parse-url
 	 (if url-arg
 	     (cadr url-arg)
-	   "http://localhost:8088/"))))
+	   "http://127.0.0.1:8088/"))))
 
 (defun debug-message (format-string &rest args)
   ;; (message "debug args: %s" (list format-string args))
@@ -298,11 +298,13 @@ regressions."
 	 (save-excursion
 	   (should
 	    (re-search-forward "div\\s-+class=\"document\"" nil)))
-	 (while (re-search-forward "div\\s-+class=\"document\"" nil 'noerr)
-	   (let ((end (save-excursion (save-match-data (re-search-forward "</div>")))))
-	     (save-excursion
-	       ;; search for mark item or a button that’s hiding stuff
-	       (should (re-search-forward "<mark>\\|<button[^>]+title=\"Note\"" end 'noerr))))))
+	 ;;; probably useless:
+	 ;; (while (re-search-forward "div\\s-+class=\"document\"" nil 'noerr)
+	 ;;   (let ((end (save-excursion (save-match-data (re-search-forward "</div>")))))
+	 ;;     (save-excursion
+	 ;;       ;; search for mark item or a button that’s hiding stuff
+	 ;;       (should (re-search-forward "<mark>\\|<button[^>]+title=\"Note\"" end 'noerr)))))
+	 )
        ;; check structural
        (with-current-buffer (url-retrieve-synchronously (format c "structural") (not show-debug?))
 	 (pop-to-buffer (current-buffer))
