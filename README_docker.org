@@ -121,6 +121,17 @@ we’d only use the ./autodeploy/ directory (saving 756MB + 212MB), we
 would have to rebuild and reindex everything on every ~docker run~
 command.
 
+** Updating images (for sarit-existdb)
+
+This is how to push new images to the public repository (see
+https://docs.docker.com/engine/reference/commandline/push/#concurrent-uploads):
+
+#+BEGIN_SRC bash
+docker commit <id> sarit-existdb
+docker tag sarit-existdb patmcall/sarit-existdb
+docker push patmcall/sarit-existdb
+#+END_SRC
+
 * Resources
 
 1) Official documentation for using file:Dockerfile: https://docs.docker.com/engine/reference/builder/
