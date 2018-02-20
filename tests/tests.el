@@ -130,8 +130,31 @@ exist started with bin/startup.sh.")
 ;;  (minor-mode-overriding-map-alist))
 
 
+(ert-deftest test-general-urls ()
+  "Test a list of urls.
 
-(ert-deftest test-fetching-urls ()
+Helps to avoid regressions."
+  (let ((cases `(,(concat (url-recreate-url exist-apps-base-url)
+			  "sarit-pm/docs/search-help-brief.html")
+		 ,(concat (url-recreate-url exist-apps-base-url)
+			  "sarit-pm/docs/search-help-interface.html")
+		 ,(concat (url-recreate-url exist-apps-base-url)
+			  "sarit-pm/docs/welcome.html"))))
+    (mapc
+     (lambda (c)
+       (with-current-buffer (url-retrieve-synchronously c (not show-debug?))
+	 ;; (pop-to-buffer (current-buffer))
+	 (debug-message
+	  "url-http-response-status for %s: %s"
+	  (url-unhex-string (url-recreate-url url-http-target-url))
+	  url-http-response-status)
+	 (should
+	  (equal
+	   url-http-response-status
+	   200))))
+     cases)))
+
+(ert-deftest test-search-urls ()
   "Test search function for specific things.
 
 These urls had problems at one time or another, avoid
