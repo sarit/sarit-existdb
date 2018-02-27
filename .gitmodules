@@ -13,6 +13,3 @@
 [submodule "lucene-transcoding-analyzer"]
 	path = lucene-transcoding-analyzer
 	url = https://github.com/sarit/lucene-transcoding-analyzer.git
-[submodule "SARIT-corpus"]
-	path = SARIT-corpus
-	url = https://github.com/sarit/SARIT-corpus.git
