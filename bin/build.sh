@@ -24,7 +24,7 @@ echo "Building things in $STARTDIR/exist ..."
 
 mkdir -p "$STARTDIR"/blobs/ && cd "$STARTDIR"/blobs/
 echo "Installing transcode library from sanskritlibrary.org ..."
-[ ! -f transcodeFile.zip ] && "Downloading transcodeFile.zip" && wget --quiet http://sanskritlibrary.org/software/transcodeFile.zip
+[ ! -f transcodeFile.zip ] && echo "Downloading transcodeFile.zip" && wget http://sanskritlibrary.org/software/transcodeFile.zip
 unzip -q -u transcodeFile.zip
 mvn --batch-mode --quiet install:install-file -Dfile=./TranscodeFile/dist/lib/SanskritLibrary.jar -DgroupId=org.sanskritlibrary -DartifactId=sl -Dversion=0.1 -Dpackaging=jar
 cd "$STARTDIR"
