@@ -55,7 +55,7 @@ exist started with bin/startup.sh.")
 			     default-directory)))
     (with-temp-buffer
       (insert-file-contents
-       (expand-file-name "../SARIT-corpus/saritcorpus.xml"))
+       (expand-file-name "../sarit-pm/SARIT-corpus/saritcorpus.xml"))
       (mapcar (lambda (entry)
 		(when (equal (car entry) 'include)
 		  (if full-path?
@@ -249,7 +249,7 @@ regressions."
 	       x
 	       (file-name-as-directory
 		(expand-file-name
-		 "../SARIT-corpus"
+		 "../sarit-pm/SARIT-corpus"
 		 (if load-file-name
 		     (file-name-directory load-file-name)
 		   default-directory))))
