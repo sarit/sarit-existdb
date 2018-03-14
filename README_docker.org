@@ -5,23 +5,23 @@
 If you have [[https://www.docker.com/][docker]] installed, you should be able to run a pre-built
 image like this:
 
-~docker run patmcall/sarit-existdb~ 
+~docker run patmcall/sarit-existdb:latest~ 
 
 After a while, something like this should appear:
 
 #+BEGIN_SRC sh
-19 Apr 2017 12:16:17,721 [main] INFO  (JettyStart.java [run]:257) - ----------------------------------------------------- 
-19 Apr 2017 12:16:17,722 [main] INFO  (JettyStart.java [run]:258) - Server has started, listening on: 
-19 Apr 2017 12:16:17,723 [main] INFO  (JettyStart.java [run]:260) -     http://172.17.0.42:8080/ 
-19 Apr 2017 12:16:17,724 [main] INFO  (JettyStart.java [run]:260) -     https://172.17.0.42:8443/ 
-19 Apr 2017 12:16:17,724 [main] INFO  (JettyStart.java [run]:263) - Configured contexts: 
-19 Apr 2017 12:16:17,726 [main] INFO  (JettyStart.java [run]:269) -     /exist 
-19 Apr 2017 12:16:17,727 [main] INFO  (JettyStart.java [run]:269) -     / 
-19 Apr 2017 12:16:17,727 [main] INFO  (JettyStart.java [run]:323) - ----------------------------------------------------- 
+13 Mar 2018 08:38:31,899 [main] INFO  (JettyStart.java [run]:262) - -----------------------------------------------------
+13 Mar 2018 08:38:31,899 [main] INFO  (JettyStart.java [run]:263) - Server has started, listening on:
+13 Mar 2018 08:38:31,899 [main] INFO  (JettyStart.java [run]:265) -     http://172.17.0.3:8088/
+13 Mar 2018 08:38:31,899 [main] INFO  (JettyStart.java [run]:265) -     https://172.17.0.3:8451/
+13 Mar 2018 08:38:31,900 [main] INFO  (JettyStart.java [run]:268) - Configured contexts:
+13 Mar 2018 08:38:31,900 [main] INFO  (JettyStart.java [run]:274) -     /
+13 Mar 2018 08:38:31,900 [main] INFO  (JettyStart.java [run]:328) - -----------------------------------------------------
 #+END_SRC
 
 This tells you where you can access the existdb instance, in this case
-~http://172.17.0.42:8080/~.
+~http://172.17.0.3:8088/~.  Note that this will usually show an empty
+page ().  SARIT actually runs on ~http://172.17.0.3:8088/sarit-pm/~.
 
 
 The image is *large*, slightly more than 2 GB: this is because it
