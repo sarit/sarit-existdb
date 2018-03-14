@@ -410,7 +410,7 @@ regressions."
 		      (concat (file-name-sans-extension doc) ".epub")))
 		   (sarit-tests-get-docs-in-corpus))))
     (dolist (doc-url doc-urls)
-      (debug-message  "Retrieving TeX source %s" doc-url)
+      (debug-message  "Retrieving epub %s" doc-url)
       (with-current-buffer (url-retrieve-synchronously doc-url)
 	(should
 	 (equal
