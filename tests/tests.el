@@ -182,7 +182,7 @@ regressions."
 	   url-http-response-status
 	   200))
 	 (goto-char (point-min))
-	 (re-search-forward "id=\"hit-count\">\\([0-9]+\\)</span>" nil 'noerr)
+	 (re-search-forward "id=\"hit-count\"[^>]*>\\([0-9]+\\)</span>" nil)
 	 (let ((result-count (string-to-number (match-string 1))))
 	   (debug-message "Results: %s" result-count)
 	   (should
