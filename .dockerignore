@@ -1,3 +1,9 @@
-*
-!/sarit-pm/build/*.xar
-!/sarit-transliteration-exist-module/target/*.xar
+./.git
+# don't send exist data
+./exist/webapp/WEB-INF/data
+./exist/autodeploy
+/backup/
+./exist/dist
+./sarit-pm/node_modules
+./sarit-pm/build/
+./sarit-data/build
