@@ -54,7 +54,7 @@ cd "$STARTDIR"
 
 echo "Starting existdb locally to build sarit-pm ..."
 cd ./exist/ ||  exit 1
- java -jar start.jar jetty &
+ ./bin/startup.sh &
 EXPROC=$!
 echo "Waiting for existdb to load completely ($EXPROC) ..."
 sleep 5
@@ -64,7 +64,7 @@ cd "$STARTDIR"
 echo "Building sarit-pm ..."
 cd ./sarit-pm/ ||  exit 1
  ../exist/build.sh xar-all-inclusive
-cp ./build/sarit-pm-0.3.xar ../exist/autodeploy/sarit-pm-0.3.xar
+cp ./build/sarit-pm-0.3.xar ../exist/autodeploy/
 cd "$STARTDIR"
 
 cd ./exist/ || exit 1
@@ -74,7 +74,7 @@ cd "$STARTDIR"
 
 echo "Starting existdb to trigger autodeploy (#1) ..."
 cd ./exist/ ||  exit 1
- java -jar start.jar jetty &
+ ./bin/startup.sh &
 EXPROC=$!
 echo "Waiting for existdb to load completely ($EXPROC) ..."
 sleep 5
