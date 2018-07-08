@@ -186,6 +186,66 @@ webapp on the host where it is being run:
 2) https://github.com/eXist-db/exist/issues/1352
    1) makes it impossible to produce a .war file (that could easily be deployed)
 
+
+* Performance
+
+Keeping an eye on SARIT’s performance here:
+
+** http://sarit.indology.info
+
+#+BEGIN_SRC bash :results value verbatim
+ab -kc 100 -n 100 http://sarit.indology.info/
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+This is ApacheBench, Version 2.3 <$Revision: 1826891 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking sarit.indology.info (be patient).....done
+
+
+Server Software:        nginx
+Server Hostname:        sarit.indology.info
+Server Port:            80
+
+Document Path:          /
+Document Length:        106663 bytes
+
+Concurrency Level:      10
+Time taken for tests:   3.696 seconds
+Complete requests:      10
+Failed requests:        0
+Keep-Alive requests:    0
+Total transferred:      1070937 bytes
+HTML transferred:       1066630 bytes
+Requests per second:    2.71 [#/sec] (mean)
+Time per request:       3695.540 [ms] (mean)
+Time per request:       369.554 [ms] (mean, across all concurrent requests)
+Transfer rate:          283.00 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       15   19   2.2     20      22
+Processing:   726 2573 682.8   2878    2991
+Waiting:      668 2516 682.2   2828    2921
+Total:        742 2592 684.1   2895    3012
+
+Percentage of the requests served within a certain time (ms)
+  50%   2895
+  66%   2909
+  75%   2957
+  80%   2979
+  90%   3012
+  95%   3012
+  98%   3012
+  99%   3012
+ 100%   3012 (longest request)
+#+end_example
+
+
+
 * Footnotes
 
 [fn:1] 
