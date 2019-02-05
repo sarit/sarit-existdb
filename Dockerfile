@@ -32,7 +32,7 @@ RUN apt-get update && \
 # the annoying nodejs stuff.  apt-get install grunt didn’t work, so
 # install it globally here (symptoms as in
 # https://stackoverflow.com/questions/15444020/cannot-find-module-findup-sync-when-trying-to-run-grunt#21107061)
-RUN curl -sL https://deb.nodesource.com/setup_4.x | bash - && \
+RUN curl -sL https://deb.nodesource.com/setup_11.x | bash - && \
     apt-get --quiet --yes install nodejs && \
     apt-get clean && \
     npm update -g npm && \
