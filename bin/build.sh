@@ -11,7 +11,7 @@ then
     exit 1
 fi
 
-if [ -d ./exist/ ] && [ -d ./sarit-pm/ ]
+if [ -d ./docker-existdb/ ] && [ -d ./sarit-pm/ ]
 then
     STARTDIR=$(pwd)
 else
@@ -19,8 +19,16 @@ else
     exit 1
 fi
 
+EXISTDB_VERSION="${1}"
 
-echo "Building things in $STARTDIR/exist ..."
+if [ -z ${EXISTDB_VERSION} ]
+then
+	echo "You must specify a version of eXistdb to build!"
+	echo ""
+	exit 1
+fi
+
+echo "Building java libs in $STARTDIR ..."
 
 mkdir -p "$STARTDIR"/blobs/ && cd "$STARTDIR"/blobs/
 echo "Installing transcode library from sanskritlibrary.org ..."
@@ -34,55 +42,55 @@ cd ./lucene-transcoding-analyzer/ ||  exit 1
 mvn --batch-mode --quiet clean install -DskipTests
 cd "$STARTDIR"
 
-echo "Building exist-db ..."
-if [ -f ./exist.local.build.properties ]
-then
-    echo "Found local build properties, using them for eXist"
-    cp ./exist.local.build.properties ./exist/local.build.properties
-fi
-cd ./exist/ ||  exit 1
-./build.sh clean
-./build.sh clean-all
-./build.sh
-cd "$STARTDIR"
+mkdir -p "$STARTDIR"/exist-autodeploy/
 
 echo "Building sarit-transliteration-exist-module ..."
 cd ./sarit-transliteration-exist-module/ ||  exit 1
 mvn --batch-mode --quiet clean package
-cp ./target/sarit-transliteration-exist-module-0.0.8.xar ../exist/autodeploy/
+cp ./target/sarit-transliteration-exist-module-0.0.8.xar ../exist-autodeploy/
 cd "$STARTDIR"
 
-echo "Starting existdb locally to build sarit-pm ..."
-cd ./exist/ ||  exit 1
- ./bin/startup.sh &
-EXPROC=$!
-echo "Waiting for existdb to load completely ($EXPROC) ..."
-sleep 5
-grep -m 1 "Server has started, listening on" <(tail -f "$STARTDIR"/exist/webapp/WEB-INF/logs/exist.log)
+# build existdb version with docker
+
+cd ./docker-existdb/
+mkdir -p ./target/exist/autodeploy
+cp -R $STARTDIR/exist-autodeploy/*.xar ./target/exist/autodeploy/
+./build.sh $EXISTDB_VERSION
 cd "$STARTDIR"
 
-echo "Building sarit-pm ..."
-cd ./sarit-pm/ ||  exit 1
- ../exist/build.sh xar-all-inclusive
-cp ./build/sarit-pm-0.4.xar ../exist/autodeploy/
-cd "$STARTDIR"
+# That should give us a “sarit/exist-db:VERSION” to run
+echo "See how it went with “docker run --rm --name local-sarit-existdb -it -p 9080:8080 -p 9443:8443 sarit/exist-db:$EXISTDB_VERSION”"
 
-cd ./exist/ || exit 1
-echo "Shutting down existdb ($EXPROC) ..."
-./bin/shutdown.sh
-cd "$STARTDIR"
+# echo "Starting existdb locally to build sarit-pm ..."
+# docker run -it -p 9080:8080 -p 9443:8443 sarit/exist-db:"$EXISTDB_VERSION" &
+# EXPROC=$!
+# echo "Waiting for existdb to load completely ($EXPROC) ..."
+# sleep 5
+# grep -m 1 "Server has started, listening on" <(tail -f "$STARTDIR"/exist/webapp/WEB-INF/logs/exist.log)
+# cd "$STARTDIR"
 
-echo "Starting existdb to trigger autodeploy (#1) ..."
-cd ./exist/ ||  exit 1
- ./bin/startup.sh &
-EXPROC=$!
-echo "Waiting for existdb to load completely ($EXPROC) ..."
-sleep 5
-grep -m 1 "Server has started, listening on" <(tail -f "$STARTDIR"/exist/webapp/WEB-INF/logs/exist.log)
-echo "Shutting down existdb ($EXPROC) ..."
- ./bin/shutdown.sh
-cd "$STARTDIR"
+# echo "Building sarit-pm ..."
+# cd ./sarit-pm/ ||  exit 1
+#  ../exist/build.sh xar-all-inclusive
+# cp ./build/sarit-pm-0.4.xar ../exist/autodeploy/
+# cd "$STARTDIR"
 
-echo "Done, run ' $STARTDIR/exist/bin/startup.sh' to start the server."
+# cd ./exist/ || exit 1
+# echo "Shutting down existdb ($EXPROC) ..."
+# ./bin/shutdown.sh
+# cd "$STARTDIR"
+
+# echo "Starting existdb to trigger autodeploy (#1) ..."
+# cd ./exist/ ||  exit 1
+#  ./bin/startup.sh &
+# EXPROC=$!
+# echo "Waiting for existdb to load completely ($EXPROC) ..."
+# sleep 5
+# grep -m 1 "Server has started, listening on" <(tail -f "$STARTDIR"/exist/webapp/WEB-INF/logs/exist.log)
+# echo "Shutting down existdb ($EXPROC) ..."
+#  ./bin/shutdown.sh
+# cd "$STARTDIR"
+
+# echo "Done, run ' $STARTDIR/exist/bin/startup.sh' to start the server."
 
 cd "$STARTDIR"

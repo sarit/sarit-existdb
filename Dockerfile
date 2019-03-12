@@ -33,15 +33,15 @@ COPY sarit-pm/build/ /exist/autodeploy
 # 	    && \
 #     apt-get clean
     
-# # the annoying nodejs stuff.  apt-get install grunt didn’t work, so
-# # install it globally here (symptoms as in
-# # https://stackoverflow.com/questions/15444020/cannot-find-module-findup-sync-when-trying-to-run-grunt#21107061)
-# RUN curl -sL https://deb.nodesource.com/setup_4.x | bash - && \
-#     apt-get --quiet --yes install nodejs && \
-#     apt-get clean && \
-#     npm update -g npm && \
-#     npm install -g grunt-cli && \
-#     npm install -g grunt
+# the annoying nodejs stuff.  apt-get install grunt didn’t work, so
+# install it globally here (symptoms as in
+# https://stackoverflow.com/questions/15444020/cannot-find-module-findup-sync-when-trying-to-run-grunt#21107061)
+RUN curl -sL https://deb.nodesource.com/setup_11.x | bash - && \
+    apt-get --quiet --yes install nodejs && \
+    apt-get clean && \
+    npm update -g npm && \
+    npm install -g grunt-cli && \
+    npm install -g grunt
 
 # # last step verifies that grunt is working in general
 # # RUN env && echo $PATH && apt-cache search -f findup && which grunt && grunt -V -v
