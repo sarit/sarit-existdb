@@ -64,7 +64,7 @@ cd "$STARTDIR"
 echo "Building sarit-pm ..."
 cd ./sarit-pm/ ||  exit 1
  ../exist/build.sh xar-all-inclusive
-cp ./build/sarit-pm-0.3.xar ../exist/autodeploy/
+cp ./build/sarit-pm-0.4.xar ../exist/autodeploy/
 cd "$STARTDIR"
 
 cd ./exist/ || exit 1
