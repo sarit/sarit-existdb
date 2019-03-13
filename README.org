@@ -174,6 +174,31 @@ You can check logs for the autodeployment in
 - To be done when manual works well.
 
 
+* Build a docker image
+
+There are two docker projects for eXist:
+
+1) https://github.com/eXist-db/docker-existdb
+2) https://github.com/evolvedbinary/docker-existdb
+
+I tried with the latter, seemed nicer (and the standard image for
+eXist v. 3.6.1 worked, unlike for the eXist-db one).
+
+But the following failed, pretty much (docker image runs, but I can’t automate things).
+
+#+BEGIN_SRC bash
+  # install transcoding stuff and build the basic docker image 
+  JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/build.sh eXist-3.6.1
+  # build the sarit-pm module, and move it to a good place
+  cd ./sarit-pm
+  JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ../docker-existdb/target/exist/build.sh && \
+      cp ./build/sarit-pm-0.4.xar ../docker-existdb/target/exist/autodeploy/ && \
+      cp ./build/sarit-pm-0.4.xar ../exist-autodeploy/
+  # rebuild the docker image now that the autodeploy stuff is in place
+  cd ../
+  JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre ./bin/build.sh --no-rebuild eXist-3.6.1
+#+END_SRC
+
 * Important Bugs 
 <<exist-bugs>>
 
