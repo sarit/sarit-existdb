@@ -15,4 +15,4 @@
 	url = https://github.com/sarit/lucene-transcoding-analyzer.git
 [submodule "docker-existdb"]
 	path = docker-existdb
-	url = git@github.com:eXist-db/docker-existdb.git
+	url = git@github.com:sarit/docker-existdb.git

@@ -53,10 +53,30 @@ cd "$STARTDIR"
 # build existdb version with docker
 
 cd ./docker-existdb/
+if [ ! -d ./target/exist ]
+then
+    mkdir ./target && \
+        cd ./target && \
+        git clone https://github.com/exist-db/exist.git && \
+        cd ../
+fi
+
+# build sarit-pm
+cd "$STARTDIR"/sarit-pm
+../docker-existdb/target/exist/build.sh
+cp ./build/sarit-pm-0.4.xar ../exist-autodeploy/
+
+cd "$STARTDIR"/docker-existdb
 mkdir -p ./target/exist/autodeploy
 cp -R $STARTDIR/exist-autodeploy/*.xar ./target/exist/autodeploy/
-./build.sh $EXISTDB_VERSION
+
+# now, build existdb
+./build.sh $EXISTDB_VERSION    
 cd "$STARTDIR"
+
+
+
+
 
 # That should give us a “sarit/exist-db:VERSION” to run
 echo "See how it went with “docker run --rm --name local-sarit-existdb -it -p 9080:8080 -p 9443:8443 sarit/exist-db:$EXISTDB_VERSION”"
