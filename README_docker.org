@@ -1,11 +1,18 @@
 #+TITLE: Docker image for SARIT’s web application
 
+- It’s recommended that you use [[https://podman.io/][podman]] instead of ~docker~.
+- Set ~alias docker=podman~ in a shell to make the switch
+- To get images, run
+  - ~podman pull docker.io/patmcall/sarit-existdb:latest~ or (with the
+    alias set)
+  - ~docker pull docker.io/patmcall/sarit-existdb:latest~
+
 * Running the default image
 
 If you have [[https://www.docker.com/][docker]] installed, you should be able to run a pre-built
 image like this:
 
-~docker run patmcall/sarit-existdb:latest~ 
+~docker run --rm -p 127.0.0.1:8088:8088 --name sarit-existdb docker.io/patmcall/sarit-existdb:latest~ 
 
 After a while, something like this should appear:
 
